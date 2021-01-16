@@ -78,3 +78,58 @@ class TestBreakRepeatXOR(unittest.TestCase):
         actual_keysizes = find_keysize(b)
 
         self.assertEqual(expected_keysize, actual_keysizes[0])
+
+    def test_build_transposed_none_input_raises_typeerror(self):
+        with self.assertRaises(TypeError):
+            build_transposed(None, 1, 1)
+
+    def test_build_transposed_empty_input_returns_empty(self):
+        self.assertEqual(build_transposed(b'', 1, 1), b'')
+
+    def test_build_transposed_mod_one_returns_given_bytes(self):
+        b = b'Hey there'
+        expected_bytes = b'Hey there'
+
+        actual_bytes = build_transposed(b, 1, 0)
+
+        self.assertEqual(expected_bytes, actual_bytes)
+
+    def test_build_transposed_get_every_other_byte(self):
+        b = b'Hey there'
+        expected_bytes = b'e hr'
+
+        actual_bytes = build_transposed(b, 2, 1)
+
+        self.assertEqual(expected_bytes, actual_bytes)
+
+    def test_build_transposed_n_is_larger_than_m_uses_n_mod_m(self):
+        b = b'Hey there'
+        expected_bytes = b'e hr'
+
+        actual_bytes = build_transposed(b, 2, 3)
+
+        self.assertEqual(expected_bytes, actual_bytes)
+
+    def test_build_transposed_n_is_negative_uses_n_mod_m(self):
+        b = b'Hey there'
+        expected_bytes = b'e hr'
+
+        actual_bytes = build_transposed(b, 2, -1)
+
+        self.assertEqual(expected_bytes, actual_bytes)
+
+    def test_build_transposed_negative_m_returns_empty(self):
+        b = b'Hey there'
+        expected_bytes = b''
+
+        actual_bytes = build_transposed(b, -1, 1)
+
+        self.assertEqual(expected_bytes, actual_bytes)
+
+    def test_build_transposed_zero_m_returns_empty(self):
+        b = b'Hey there'
+        expected_bytes = b''
+
+        actual_bytes = build_transposed(b, 0, 1)
+
+        self.assertEqual(expected_bytes, actual_bytes)

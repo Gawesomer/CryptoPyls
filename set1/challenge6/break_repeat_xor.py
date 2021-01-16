@@ -1,4 +1,5 @@
 from itertools import combinations
+import sys
 
 
 def hamming_dist_int(b1: int, b2: int) -> int:
@@ -65,3 +66,23 @@ def find_keysize(encrypted: bytes, num_blks: int = 4, max_keysize: int = 40) -> 
 
     res.sort(key=lambda d: d['score'])
     return [d['keysize'] for d in res]
+
+
+def build_transposed(b: bytes, m: int, n: int) -> bytes:
+    """
+    params:
+        b
+        m
+        n
+    returns:
+        bytes containing every `n`th byte of `b` mod `m`
+    """
+    res = b''
+    if m <= 0:
+        return res
+
+    i = n%m
+    while i < len(b):
+        res += b[i].to_bytes(1, byteorder=sys.byteorder)
+        i += m
+    return res
