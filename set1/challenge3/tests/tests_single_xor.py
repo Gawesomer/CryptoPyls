@@ -9,6 +9,9 @@ class TestSingleXOR(unittest.TestCase):
         with self.assertRaises(TypeError):
             single_xor(None, b'A')
 
+    def test_single_xor_empty_input_returns_empty_bytes(self):
+        self.assertEqual(single_xor(b'', b'A'), b'')
+
     def test_single_xor_none_s_returns_unchanged_bytes(self):
         b = b'Hey'
         expected_bytes = b'Hey'
