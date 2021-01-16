@@ -53,6 +53,9 @@ def find_keysize(encrypted: bytes, num_blks: int = 4, max_keysize: int = 40) -> 
     for keysize in range(2, max_keysize+1):
         score = 0
         blocks = [encrypted[i*keysize:(i+1)*keysize] for i in range(num_blks)]
+        blocks = [b for b in blocks if b != b'']    # filter out empty blocks
+        if len(blocks) < 2:
+            break
         num_combinations = 0
         for blk1, blk2 in combinations(blocks, 2):
             score += hamming_dist(blk1, blk2)

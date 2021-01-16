@@ -57,6 +57,13 @@ class TestBreakRepeatXOR(unittest.TestCase):
 
         self.assertEqual(expected_keysizes, actual_keysizes)
 
+    def test_find_keysize_short_message_ignores_keysizes_too_large(self):
+        b = b'ABCD'
+
+        actual_keysizes = find_keysize(b, num_blks=2, max_keysize=40)
+
+        self.assertEqual(2, len(actual_keysizes))
+
     def test_find_keysize_cryptopals_case(self):
         input_filename = os.path.join(
             pathlib.Path(__file__).parent.parent,
