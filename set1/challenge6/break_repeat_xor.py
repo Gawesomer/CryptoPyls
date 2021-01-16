@@ -46,6 +46,9 @@ def find_keysize(encrypted: bytes, num_blks: int = 4) -> list:
         list of integer keysizes sorted in decreasing order of likeliness
     """
     res = list()
+    if num_blks <= 0:
+        return res
+
     for keysize in range(2, 41):
         score = 0
         blocks = [encrypted[i*keysize:(i+1)*keysize] for i in range(num_blks)]
@@ -53,5 +56,6 @@ def find_keysize(encrypted: bytes, num_blks: int = 4) -> list:
             score += hamming_dist(blk1, blk2)
         score /= (len(blocks)*keysize)
         res.append({'keysize': keysize, 'score': score})
+
     res.sort(key=lambda d: d['score'])
     return [d['keysize'] for d in res]

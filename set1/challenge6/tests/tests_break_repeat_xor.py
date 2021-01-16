@@ -33,6 +33,22 @@ class TestBreakRepeatXOR(unittest.TestCase):
         with self.assertRaises(TypeError):
             find_keysize(None)
 
+    def test_find_keysize_negative_num_blks_returns_empty(self):
+        b = b'Hey'
+        expected_keysizes = []
+
+        actual_keysizes = find_keysize(b, num_blks=-1)
+
+        self.assertEqual(expected_keysizes, actual_keysizes)
+
+    def test_find_keysize_zero_num_blks_returns_empty(self):
+        b = b'Hey'
+        expected_keysizes = []
+
+        actual_keysizes = find_keysize(b, num_blks=0)
+
+        self.assertEqual(expected_keysizes, actual_keysizes)
+
     def test_find_keysize_cryptopals_case(self):
         input_filename = os.path.join(
             pathlib.Path(__file__).parent.parent,
