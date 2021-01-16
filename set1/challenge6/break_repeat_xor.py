@@ -1,3 +1,6 @@
+from itertools import combinations
+
+
 def hamming_dist_int(b1: int, b2: int) -> int:
     """
     params:
@@ -31,3 +34,24 @@ def hamming_dist(b1: bytes, b2: bytes) -> int:
     for i in range(min_len):
         res += hamming_dist_int(b1[i], b2[i])
     return res
+
+
+def find_keysize(encrypted: bytes, num_blks: int = 4) -> list:
+    """
+    params:
+        encrypted: bytes encrypted using repeat-xor
+        num_blks: number of blocks to use to determine likeliness of keysize
+                  more blocks yields greater accuracy
+    returns:
+        list of integer keysizes sorted in decreasing order of likeliness
+    """
+    res = list()
+    for keysize in range(2, 41):
+        score = 0
+        blocks = [encrypted[i*keysize:(i+1)*keysize] for i in range(num_blks)]
+        for blk1, blk2 in combinations(blocks, 2):
+            score += hamming_dist(blk1, blk2)
+        score /= (len(blocks)*keysize)
+        res.append({'keysize': keysize, 'score': score})
+    res.sort(key=lambda d: d['score'])
+    return [d['keysize'] for d in res]
