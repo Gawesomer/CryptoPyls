@@ -42,6 +42,7 @@ def find_keysize(encrypted: bytes, num_blks: int = 4, max_keysize: int = 40) -> 
         encrypted: bytes encrypted using repeat-xor
         num_blks: number of blocks to use to determine likeliness of keysize
                   more blocks yields greater accuracy
+        max_keysize: maximum keysize that should be tested for
     returns:
         list of integer keysizes sorted in decreasing order of likeliness
     """
