@@ -7,7 +7,7 @@ def single_xor(b: bytes, s: bytes) -> bytes:
     """
     params:
         b: bytes to be XORed
-        s: single byte
+        s: single byte used for encryption
     returns:
         result of XORing every byte of `b` with `s`
         if `s` is more than one byte, only first byte is used
