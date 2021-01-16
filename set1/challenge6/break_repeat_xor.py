@@ -53,9 +53,11 @@ def find_keysize(encrypted: bytes, num_blks: int = 4, max_keysize: int = 40) -> 
     for keysize in range(2, max_keysize+1):
         score = 0
         blocks = [encrypted[i*keysize:(i+1)*keysize] for i in range(num_blks)]
+        num_combinations = 0
         for blk1, blk2 in combinations(blocks, 2):
             score += hamming_dist(blk1, blk2)
-        score /= (len(blocks)*keysize)
+            num_combinations += 1
+        score /= (num_combinations*keysize)
         res.append({'keysize': keysize, 'score': score})
 
     res.sort(key=lambda d: d['score'])
