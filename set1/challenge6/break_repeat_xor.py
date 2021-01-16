@@ -36,7 +36,7 @@ def hamming_dist(b1: bytes, b2: bytes) -> int:
     return res
 
 
-def find_keysize(encrypted: bytes, num_blks: int = 4) -> list:
+def find_keysize(encrypted: bytes, num_blks: int = 4, max_keysize: int = 40) -> list:
     """
     params:
         encrypted: bytes encrypted using repeat-xor
@@ -49,7 +49,7 @@ def find_keysize(encrypted: bytes, num_blks: int = 4) -> list:
     if num_blks <= 0:
         return res
 
-    for keysize in range(2, 41):
+    for keysize in range(2, max_keysize+1):
         score = 0
         blocks = [encrypted[i*keysize:(i+1)*keysize] for i in range(num_blks)]
         for blk1, blk2 in combinations(blocks, 2):

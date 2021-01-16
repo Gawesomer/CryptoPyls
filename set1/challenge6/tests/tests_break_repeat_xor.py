@@ -49,6 +49,14 @@ class TestBreakRepeatXOR(unittest.TestCase):
 
         self.assertEqual(expected_keysizes, actual_keysizes)
 
+    def test_find_keysize_invalid_max_keysize_returns_empty(self):
+        b = b'Hey'
+        expected_keysizes = []
+
+        actual_keysizes = find_keysize(b, max_keysize=0)
+
+        self.assertEqual(expected_keysizes, actual_keysizes)
+
     def test_find_keysize_cryptopals_case(self):
         input_filename = os.path.join(
             pathlib.Path(__file__).parent.parent,
