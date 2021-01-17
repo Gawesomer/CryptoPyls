@@ -1,5 +1,19 @@
+import base64
 from itertools import combinations
+import os
+import pathlib
 import sys
+
+from set1.challenge3.break_single_xor import break_single_xor
+from set1.challenge3.single_xor import single_xor
+from set1.challenge5.repeat_xor import repeat_xor
+
+
+__all__ = (
+    "hamming_dist",
+    "find_keysize",
+    "break_repeat_xor",
+)
 
 
 def hamming_dist_int(b1: int, b2: int) -> int:
@@ -86,3 +100,32 @@ def build_transposed(b: bytes, m: int, n: int) -> bytes:
         res += b[i].to_bytes(1, byteorder=sys.byteorder)
         i += m
     return res
+
+
+def break_repeat_xor(encrypted: bytes, keysize: int) -> list:
+    """
+    params:
+        encrypted: bytes encrypted using repeat-xor
+    returns:
+        dictionary {'message': bytes, 'key': bytes} with most likely
+        decrypted message and key using given `keysize`
+    """
+    key = b''
+    for i in range(keysize):
+        key += break_single_xor(
+            build_transposed(encrypted, keysize, i)
+        )[0]['key']
+    return {'message': repeat_xor(encrypted, key), 'key': key}
+
+
+if __name__ == "__main__":
+        input_filename = os.path.join(pathlib.Path(__file__).parent, "input")
+        with open(input_filename, 'r') as input_file:
+            base64_str = input_file.read()
+        base64_bytes = base64_str.replace('\n', '').encode("utf-8")
+        encrypted = base64.decodebytes(base64_bytes)
+
+        keysize = find_keysize(encrypted)[0]
+
+        for k, v in break_repeat_xor(encrypted, keysize).items():
+            print("%s: %s" % (k, v))

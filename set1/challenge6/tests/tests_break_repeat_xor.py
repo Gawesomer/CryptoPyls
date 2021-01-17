@@ -4,6 +4,7 @@ import pathlib
 import unittest
 
 from set1.challenge6.break_repeat_xor import *
+from set1.challenge6.break_repeat_xor import build_transposed
 
 
 class TestHammingDistance(unittest.TestCase):
@@ -72,10 +73,10 @@ class TestBreakRepeatXOR(unittest.TestCase):
         with open(input_filename, 'r') as input_file:
             base64_str = input_file.read()
         base64_bytes = base64_str.replace('\n', '').encode("utf-8")
-        b = base64.decodebytes(base64_bytes)
+        encrypted = base64.decodebytes(base64_bytes)
         expected_keysize = 29
 
-        actual_keysizes = find_keysize(b)
+        actual_keysizes = find_keysize(encrypted)
 
         self.assertEqual(expected_keysize, actual_keysizes[0])
 
@@ -133,3 +134,40 @@ class TestBreakRepeatXOR(unittest.TestCase):
         actual_bytes = build_transposed(b, 0, 1)
 
         self.assertEqual(expected_bytes, actual_bytes)
+
+    def test_break_repeat_xor_none_input_raises_typeerror(self):
+        with self.assertRaises(TypeError):
+            break_repeat_xor(None, 1)
+
+    def test_break_repeat_xor_empty_input_returns_empty_message(self):
+        expected_message = b''
+
+        actual_res = break_repeat_xor(b'', 1)
+
+        self.assertEqual(expected_message, actual_res['message'])
+
+    def test_break_repeat_xor_invalid_keysize_returns_message_unchanged(self):
+        encrypted = b'Hey there'
+        expected_message = b'Hey there'
+        expected_key = b''
+
+        actual_res = break_repeat_xor(encrypted, -1)
+
+        self.assertEqual(expected_message, actual_res['message'])
+        self.assertEqual(expected_key, actual_res['key'])
+
+    def test_break_repeat_xor_cryptopals_case(self):
+        input_filename = os.path.join(
+            pathlib.Path(__file__).parent.parent,
+            "input"
+        )
+        with open(input_filename, 'r') as input_file:
+            base64_str = input_file.read()
+        base64_bytes = base64_str.replace('\n', '').encode("utf-8")
+        encrypted = base64.decodebytes(base64_bytes)
+        keysize = 29
+        expected_key = b'Terminator X: Bring the noise'
+
+        actual_res = break_repeat_xor(encrypted, keysize)
+
+        self.assertEqual(expected_key, actual_res['key'])
