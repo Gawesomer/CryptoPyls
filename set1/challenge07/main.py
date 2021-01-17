@@ -3,6 +3,8 @@ from Crypto.Cipher import AES
 import pathlib
 import os
 
+from set1.challenge07.ecb_mode import ecb_mode
+
 
 def main():
     """
@@ -17,7 +19,7 @@ def main():
     base64_bytes = base64_str.replace('\n', '').encode("utf-8")
     encrypted = base64.decodebytes(base64_bytes)
 
-    message = cipher.decrypt(encrypted)
+    message = ecb_mode(encrypted, 16, cipher.decrypt)
 
     print(message.decode())
 
