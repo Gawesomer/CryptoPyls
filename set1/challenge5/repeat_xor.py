@@ -20,5 +20,5 @@ def repeat_xor(b: bytes, key: bytes) -> bytes:
     key_len = len(key)
     for i in range(len(b)):
         operand += key[j].to_bytes(1, byteorder=sys.byteorder)
-        j = (j+1)%key_len
+        j = (j+1) % key_len
     return xor(b, operand)

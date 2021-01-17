@@ -5,7 +5,6 @@ import pathlib
 import sys
 
 from set1.challenge3.break_single_xor import break_single_xor
-from set1.challenge3.single_xor import single_xor
 from set1.challenge5.repeat_xor import repeat_xor
 
 

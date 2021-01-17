@@ -16,5 +16,5 @@ def xor(b1: bytes, b2: bytes) -> bytes:
     res = b''
     min_len = min(len(b1), len(b2))
     for i in range(min_len):
-        res += (b1[i]^b2[i]).to_bytes(1, byteorder=sys.byteorder)
+        res += (b1[i] ^ b2[i]).to_bytes(1, byteorder=sys.byteorder)
     return res
