@@ -13,6 +13,34 @@ class TestECBMode(unittest.TestCase):
             operand += i.to_bytes(1, byteorder=sys.byteorder)
         return xor(b, operand)
 
+    def test_blocks_zero_blksize_returns_empty_bytes(self):
+        b = b"ABCDEF"
+        expected_blocks = [b'']
+
+        for i, block in enumerate(blocks(b, 0)):
+            self.assertEqual(expected_blocks[i], block)
+
+    def test_blocks_negative_blksize_returns_empty_bytes(self):
+        b = b"ABCDEF"
+        expected_blocks = [b'']
+
+        for i, block in enumerate(blocks(b, -1)):
+            self.assertEqual(expected_blocks[i], block)
+
+    def test_blocks_bytes_of_proper_length(self):
+        b = b"ABCDEF"
+        expected_blocks = [b"AB", b"CD", b"EF"]
+
+        for i, block in enumerate(blocks(b, 2)):
+            self.assertEqual(expected_blocks[i], block)
+
+    def test_blocks_bytes_not_padded_ignores_extraneous(self):
+        b = b"ABCDEFG"
+        expected_blocks = [b"AB", b"CD", b"EF"]
+
+        for i, block in enumerate(blocks(b, 2)):
+            self.assertEqual(expected_blocks[i], block)
+
     def test_ecb_mode_none_bytes_raises_typeerror(self):
         with self.assertRaises(TypeError):
             ecb_mode(None, 1, self.mock_fun)
