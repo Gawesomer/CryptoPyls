@@ -63,15 +63,15 @@ class TestECBMode(unittest.TestCase):
 
     def test_ecb_mode_bytes_of_proper_length(self):
         b = b"\x00\x01\x00\x01"
-        expected_bytes = b"\00\x00\x00\x00"
+        expected_bytes = b"\x00\x00\x00\x00"
 
         actual_bytes = ecb_mode(b, 2, self.mock_fun)
 
         self.assertEqual(expected_bytes, actual_bytes)
 
-    def test_ecb_mode_bytes_not_padded_ignores_extraneouse(self):
+    def test_ecb_mode_bytes_not_padded_ignores_extraneous(self):
         b = b"\x00\x01\x00\x01\x23"
-        expected_bytes = b"\00\x00\x00\x00"
+        expected_bytes = b"\x00\x00\x00\x00"
 
         actual_bytes = ecb_mode(b, 2, self.mock_fun)
 
