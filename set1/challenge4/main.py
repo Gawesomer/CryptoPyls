@@ -3,11 +3,6 @@ import pathlib
 
 from set1.challenge3.break_single_xor import break_single_xor
 
-"""
-Run instructions:
-    CryptoPyls$ python3 -m set1.challenge4.main
-"""
-
 
 def main():
     """
