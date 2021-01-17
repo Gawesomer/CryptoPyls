@@ -52,7 +52,7 @@ class TestECBMode(unittest.TestCase):
         actual_bytes = ecb_mode(b, 0, self.mock_fun)
 
         self.assertEqual(expected_bytes, actual_bytes)
-        
+
     def test_ecb_mode_negative_blksize_returns_empty_bytes(self):
         b = b"\x00\x01\x00\x01"
         expected_bytes = b''
