@@ -27,7 +27,7 @@ def hamming_dist_int(b1: int, b2: int) -> int:
     """
     res = 0
     while b1 > 0 or b2 > 0:
-        if (b1&1) != (b2&1):
+        if (b1 & 1) != (b2 & 1):
             res += 1
         b1 = b1 >> 1
         b2 = b2 >> 1
@@ -51,7 +51,8 @@ def hamming_dist(b1: bytes, b2: bytes) -> int:
     return res
 
 
-def find_keysize(encrypted: bytes, num_blks: int = 4, max_keysize: int = 40) -> list:
+def find_keysize(encrypted: bytes, num_blks: int = 4, max_keysize: int = 40) \
+        -> list:
     """
     params:
         encrypted: bytes encrypted using repeat-xor
@@ -95,7 +96,7 @@ def build_transposed(b: bytes, m: int, n: int) -> bytes:
     if m <= 0:
         return res
 
-    i = n%m
+    i = n % m
     while i < len(b):
         res += b[i].to_bytes(1, byteorder=sys.byteorder)
         i += m
@@ -119,13 +120,13 @@ def break_repeat_xor(encrypted: bytes, keysize: int) -> list:
 
 
 if __name__ == "__main__":
-        input_filename = os.path.join(pathlib.Path(__file__).parent, "input")
-        with open(input_filename, 'r') as input_file:
-            base64_str = input_file.read()
-        base64_bytes = base64_str.replace('\n', '').encode("utf-8")
-        encrypted = base64.decodebytes(base64_bytes)
+    input_filename = os.path.join(pathlib.Path(__file__).parent, "input")
+    with open(input_filename, 'r') as input_file:
+        base64_str = input_file.read()
+    base64_bytes = base64_str.replace('\n', '').encode("utf-8")
+    encrypted = base64.decodebytes(base64_bytes)
 
-        keysize = find_keysize(encrypted)[0]
+    keysize = find_keysize(encrypted)[0]
 
-        for k, v in break_repeat_xor(encrypted, keysize).items():
-            print("%s: %s" % (k, v))
+    for k, v in break_repeat_xor(encrypted, keysize).items():
+        print("%s: %s" % (k, v))
