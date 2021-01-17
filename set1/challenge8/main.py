@@ -10,7 +10,7 @@ def main():
     reads hex encoded strings from file
     prints the line that was most likely encrypted using ECB mode
     """
-    # list of dicts {'cipher': bytes, 'score': float}
+    # list of dicts {'cipher': bytes, 'score': float, 'line_num': int}
     res = list()
 
     input_filename = os.path.join(pathlib.Path(__file__).parent, "input")
