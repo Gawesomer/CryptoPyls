@@ -1,5 +1,4 @@
 from typing import Callable
-import sys
 
 
 def blocks(b: bytes, blk_size: int) -> bytes:
@@ -16,7 +15,6 @@ def blocks(b: bytes, blk_size: int) -> bytes:
 
     num_blcks = (len(b)//blk_size)
     for i in range(num_blcks):
-        curr = b''
         yield b[i*blk_size:(i+1)*blk_size]
 
 
