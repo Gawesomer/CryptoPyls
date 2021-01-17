@@ -4,7 +4,6 @@ import pathlib
 import unittest
 
 from set1.challenge6.break_repeat_xor import *
-from set1.challenge6.break_repeat_xor import build_transposed
 
 
 class TestHammingDistance(unittest.TestCase):
@@ -29,6 +28,37 @@ class TestHammingDistance(unittest.TestCase):
 
 
 class TestBreakRepeatXOR(unittest.TestCase):
+
+    def test_normalized_blk_hamming_avg_none_bytes_raises_typeerror(self):
+        with self.assertRaises(TypeError):
+            normalized_blk_hamming_avg(None, 1, 1)
+
+    def test_normalized_blk_hamming_avg_invalid_blk_variables_return_none(self):
+        b = b'Hey there'
+
+        self.assertIsNone(normalized_blk_hamming_avg(b, -1, 1))
+        self.assertIsNone(normalized_blk_hamming_avg(b, 1, -1))
+
+    def test_normalized_blk_hamming_avg_identical_blocks_returns_zero(self):
+        b = b'HeyHeyHey'
+        expected_score = 0
+
+        actual_score = normalized_blk_hamming_avg(b, 3, 3)
+
+        self.assertEqual(expected_score, actual_score)
+
+    def test_normalized_blk_hamming_avg_nominal_case(self):
+        b = b'this is a testwokka wokka!!!'
+        expected_score = 37/14
+
+        actual_score = normalized_blk_hamming_avg(b, 14, 2)
+
+        self.assertEqual(expected_score, actual_score)
+
+    def test_normalized_blk_hamming_avg_bytes_too_short_returns_none(self):
+        b = b'Hey there'
+
+        self.assertIsNone(normalized_blk_hamming_avg(b, 16, 4))
 
     def test_find_keysize_none_input_raises_typeerror(self):
         with self.assertRaises(TypeError):

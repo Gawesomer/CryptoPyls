@@ -8,13 +8,6 @@ from set1.challenge3.break_single_xor import break_single_xor
 from set1.challenge5.repeat_xor import repeat_xor
 
 
-__all__ = (
-    "hamming_dist",
-    "find_keysize",
-    "break_repeat_xor",
-)
-
-
 def hamming_dist_int(b1: int, b2: int) -> int:
     """
     params:
@@ -50,6 +43,30 @@ def hamming_dist(b1: bytes, b2: bytes) -> int:
     return res
 
 
+def normalized_blk_hamming_avg(b: bytes, blk_size: int, num_blks) -> float:
+    """
+    params:
+        b
+        blk_size
+        num_blks
+    returns:
+        normalized hamming distance between `num_blks` blocks of
+        size `blk_size` within `b`
+        None if `b` is two small to be broken down into at least two blocks
+    """
+    score = 0
+    blocks = [b[i*blk_size:(i+1)*blk_size] for i in range(num_blks)]
+    blocks = [b for b in blocks if b != b'']    # filter out empty blocks
+    if len(blocks) < 2:
+        return None
+    num_combinations = 0
+    for blk1, blk2 in combinations(blocks, 2):
+        score += hamming_dist(blk1, blk2)
+        num_combinations += 1
+    score /= (num_combinations*blk_size)
+    return score
+
+
 def find_keysize(encrypted: bytes, num_blks: int = 4, max_keysize: int = 40) \
         -> list:
     """
@@ -66,16 +83,9 @@ def find_keysize(encrypted: bytes, num_blks: int = 4, max_keysize: int = 40) \
         return res
 
     for keysize in range(2, max_keysize+1):
-        score = 0
-        blocks = [encrypted[i*keysize:(i+1)*keysize] for i in range(num_blks)]
-        blocks = [b for b in blocks if b != b'']    # filter out empty blocks
-        if len(blocks) < 2:
+        score = normalized_blk_hamming_avg(encrypted, keysize, num_blks)
+        if not score:
             break
-        num_combinations = 0
-        for blk1, blk2 in combinations(blocks, 2):
-            score += hamming_dist(blk1, blk2)
-            num_combinations += 1
-        score /= (num_combinations*keysize)
         res.append({'keysize': keysize, 'score': score})
 
     res.sort(key=lambda d: d['score'])
