@@ -19,7 +19,7 @@ def main():
             res.append(break_single_xor(b)[0])
 
     res.sort(key=lambda d: d['score'], reverse=True)
-    print(res[0]['message'])
+    print(res[0]['message'].decode())
 
 
 if __name__ == "__main__":
