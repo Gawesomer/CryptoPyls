@@ -1,6 +1,6 @@
 import unittest
 
-from set2.challenge9.pkcs7_padding import *
+from set2.challenge09.pkcs7_padding import *
 
 
 class TestPKCS7Padding(unittest.TestCase):

@@ -1,6 +1,6 @@
 import unittest
 
-from set1.challenge2.fixed_xor import *
+from set1.challenge02.fixed_xor import *
 
 
 class TestFixedXOR(unittest.TestCase):

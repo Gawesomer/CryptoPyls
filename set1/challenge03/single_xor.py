@@ -1,6 +1,6 @@
 import sys
 
-from set1.challenge2.fixed_xor import xor
+from set1.challenge02.fixed_xor import xor
 
 
 def single_xor(b: bytes, s: bytes) -> bytes:

@@ -1,6 +1,6 @@
 import unittest
 
-from set1.challenge5.repeat_xor import *
+from set1.challenge05.repeat_xor import *
 
 
 class TestRepeatXOR(unittest.TestCase):

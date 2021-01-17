@@ -1,6 +1,6 @@
 import unittest
 
-from set1.challenge3.single_xor import *
+from set1.challenge03.single_xor import *
 
 
 class TestSingleXOR(unittest.TestCase):

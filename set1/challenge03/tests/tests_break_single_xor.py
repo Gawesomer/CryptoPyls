@@ -1,6 +1,6 @@
 import unittest
 
-from set1.challenge3.break_single_xor import *
+from set1.challenge03.break_single_xor import *
 
 
 class TestFreqScore(unittest.TestCase):

@@ -3,7 +3,7 @@ import os
 import pathlib
 import unittest
 
-from set1.challenge6.break_repeat_xor import *
+from set1.challenge06.break_repeat_xor import *
 
 
 class TestHammingDistance(unittest.TestCase):

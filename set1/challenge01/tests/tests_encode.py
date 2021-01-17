@@ -1,7 +1,7 @@
 import binascii
 import unittest
 
-from set1.challenge1.encode import *
+from set1.challenge01.encode import *
 
 
 class TestEncode(unittest.TestCase):

@@ -4,8 +4,8 @@ import os
 import pathlib
 import sys
 
-from set1.challenge3.break_single_xor import break_single_xor
-from set1.challenge5.repeat_xor import repeat_xor
+from set1.challenge03.break_single_xor import break_single_xor
+from set1.challenge05.repeat_xor import repeat_xor
 
 
 def hamming_dist_int(b1: int, b2: int) -> int:

@@ -1,6 +1,6 @@
 import sys
 
-from set1.challenge2.fixed_xor import xor
+from set1.challenge02.fixed_xor import xor
 
 
 def repeat_xor(b: bytes, key: bytes) -> bytes:

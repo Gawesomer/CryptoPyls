@@ -1,6 +1,6 @@
 import sys
 
-from set1.challenge3.single_xor import single_xor
+from set1.challenge03.single_xor import single_xor
 
 
 """

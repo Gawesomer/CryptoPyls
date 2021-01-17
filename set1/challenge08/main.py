@@ -2,7 +2,7 @@ from Crypto.Cipher import AES
 import pathlib
 import os
 
-from set1.challenge6.break_repeat_xor import normalized_blk_hamming_avg
+from set1.challenge06.break_repeat_xor import normalized_blk_hamming_avg
 
 
 def main():
