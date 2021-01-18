@@ -1,8 +1,10 @@
+from collections import defaultdict
 from Crypto.Cipher import AES
 import random
 import sys
+from typing import Callable
 
-from set1.challenge07.ecb_mode import ecb_mode
+from set1.challenge07.ecb_mode import ecb_mode, blocks
 from set2.challenge09.pkcs7_padding import pkcs7_pad
 from set2.challenge10.cbc_mode import cbc_mode
 
@@ -44,8 +46,40 @@ def encryption_oracle(b: bytes) -> bytes:
         return cipherbytes
 
     if random.randint(0, 1) == 0:
+        print("encrypt: ECB")
         return ecb_mode(plain, 16, encrypt)
 
     iv = rand_bytes_gen(16)
 
+    print("encrypt: CBC")
     return cbc_mode(plain, 16, iv, encrypt)
+
+
+def ecb_cbc_detect(fun: Callable[[bytes], bytes]) -> str:
+    """
+    params:
+        fun: encrypts bytes using either ECB or CBC mode
+    returns:
+        "ECB" if `fun` used ECB mode
+        "CBC" otherwise
+    """
+    input_bytes = bytes(16*4)   # four blocks of zeroes
+    res = fun(input_bytes)
+    block_count = defaultdict(lambda: 0)
+    for block in blocks(res, 16):
+        block_count[block] += 1
+        if block_count[block] >= 3:
+            return "ECB"
+    return "CBC"
+
+
+def main():
+    """
+    run `ecb_cbc_detect()` a few times to check that it works
+    """
+    for i in range(100):
+        print(ecb_cbc_detect(encryption_oracle))
+
+
+if __name__ == "__main__":
+    main()
