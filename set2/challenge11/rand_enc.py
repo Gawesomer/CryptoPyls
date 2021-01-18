@@ -41,6 +41,7 @@ def encryption_oracle(b: bytes) -> bytes:
     plain = pkcs7_pad(prefix+b+suffix, 16)
     key = rand_bytes_gen(16)
     cipher = AES.new(key, AES.MODE_ECB)
+
     def encrypt(plainbytes: bytes) -> bytes:
         cipherbytes = cipher.encrypt(plainbytes)
         return cipherbytes
