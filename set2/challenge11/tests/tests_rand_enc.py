@@ -17,11 +17,11 @@ class TestRandEnc(unittest.TestCase):
         self.assertEqual(16, len(key))
 
     def test_is_ecb_detects_ecb_mode(self):
-        encryption_oracle = gen_encryption_oracle(use_ecb=True)
+        encryption_oracle = gen_encryption_oracle(16, True)
 
-        self.assertTrue(is_ecb(encryption_oracle))
+        self.assertTrue(is_ecb(encryption_oracle, 16))
 
     def test_is_ecb_detects_non_ecb_mode(self):
-        encryption_oracle = gen_encryption_oracle(use_ecb=False)
+        encryption_oracle = gen_encryption_oracle(16, use_ecb=False)
 
-        self.assertFalse(is_ecb(encryption_oracle))
+        self.assertFalse(is_ecb(encryption_oracle, 16))
