@@ -13,6 +13,54 @@ class TestECBMode(unittest.TestCase):
             operand += i.to_bytes(1, byteorder=sys.byteorder)
         return xor(b, operand)
 
+    def test_get_block_n_get_first_block(self):
+        b = b"ABCDEF"
+        expected_block = b"AB"
+
+        actual_block = get_block_n(b, 2, 0)
+
+        self.assertEqual(expected_block, actual_block)
+
+    def test_get_block_n_get_middle_block(self):
+        b = b"ABCDEF"
+        expected_block = b"CD"
+
+        actual_block = get_block_n(b, 2, 1)
+
+        self.assertEqual(expected_block, actual_block)
+
+    def test_get_block_n_get_last_block_of_size_blksize(self):
+        b = b"ABCDEF"
+        expected_block = b"EF"
+
+        actual_block = get_block_n(b, 2, 2)
+
+        self.assertEqual(expected_block, actual_block)
+
+    def test_get_block_n_get_last_block_smaller_than_blksize(self):
+        b = b"ABCDE"
+        expected_block = b"E"
+
+        actual_block = get_block_n(b, 2, 2)
+
+        self.assertEqual(expected_block, actual_block)
+
+    def test_get_block_n_n_larger_than_numblks_returns_empty(self):
+        b = b"ABCDEF"
+        expected_block = b""
+
+        actual_block = get_block_n(b, 2, 3)
+
+        self.assertEqual(expected_block, actual_block)
+
+    def test_get_block_n_negative_n_returns_empty(self):
+        b = b"ABCDEF"
+        expected_block = b""
+
+        actual_block = get_block_n(b, 2, -1)
+
+        self.assertEqual(expected_block, actual_block)
+
     def test_blocks_zero_blksize_returns_empty_bytes(self):
         b = b"ABCDEF"
         expected_blocks = [b'']
