@@ -15,3 +15,13 @@ class TestRandEnc(unittest.TestCase):
         key = rand_bytes_gen(16)
 
         self.assertEqual(16, len(key))
+
+    def test_is_ecb_detects_ecb_mode(self):
+        encryption_oracle = gen_encryption_oracle(use_ecb=True)
+
+        self.assertTrue(is_ecb(encryption_oracle))
+
+    def test_is_ecb_detects_non_ecb_mode(self):
+        encryption_oracle = gen_encryption_oracle(use_ecb=False)
+
+        self.assertFalse(is_ecb(encryption_oracle))

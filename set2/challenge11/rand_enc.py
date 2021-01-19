@@ -22,56 +22,71 @@ def rand_bytes_gen(key_size: int = 16) -> bytes:
     return key
 
 
-def encryption_oracle(b: bytes) -> bytes:
+def gen_encryption_oracle(blksize: int = 16, use_ecb: bool = None) \
+        -> Callable[[bytes], bytes]:
     """
     params:
-        b: bytes to encrypt
+        blksize: blocksize `encryption_oracle` should use
+        use_ecb: True indicates that the `encryption_oracle` should use ECB
+                 False indicates that the `encryption_oracle` should use CBC
+                 if not specified a mode will be chosen randomly
     returns:
-        `b` encrypted using AES-128 with a random key using either
-        ECB mode or CBC mode randomly (one in two chance)
-        also prepends 5-10 random bytes and appends 5-10 random bytes to `b`
-        before encryption
-        if CBC mode is used random bytes are used for the IV
+        `encryption_oracle` method
     """
-    prefix_size = random.randint(5, 10)
-    prefix = rand_bytes_gen(prefix_size)
-    suffix_size = random.randint(5, 10)
-    suffix = rand_bytes_gen(suffix_size)
+    if use_ecb is None:
+        if random.randint(0, 1) == 0:
+            use_ecb = True
+        else:
+            use_ecb = False
 
-    plain = pkcs7_pad(prefix+b+suffix, 16)
-    key = rand_bytes_gen(16)
-    cipher = AES.new(key, AES.MODE_ECB)
+    def encryption_oracle(b: bytes) -> bytes:
+        """
+        params:
+            b: bytes to encrypt
+        returns:
+            `b` encrypted using AES-128 with a random key using either
+            ECB mode or CBC mode randomly (one in two chance)
+            also prepends 5-10 random bytes and appends 5-10 random bytes to
+            `b` before encryption
+            if CBC mode is used random bytes are used for the IV
+        """
+        prefix_size = random.randint(5, 10)
+        prefix = rand_bytes_gen(prefix_size)
+        suffix_size = random.randint(5, 10)
+        suffix = rand_bytes_gen(suffix_size)
 
-    def encrypt(plainbytes: bytes) -> bytes:
-        cipherbytes = cipher.encrypt(plainbytes)
-        return cipherbytes
+        plain = pkcs7_pad(prefix+b+suffix, blksize)
+        key = rand_bytes_gen(blksize)
+        cipher = AES.new(key, AES.MODE_ECB)
 
-    if random.randint(0, 1) == 0:
-        print("encrypt: ECB")
-        return ecb_mode(plain, 16, encrypt)
+        if use_ecb:
+            # print("ECB")  # for manual verification
+            return ecb_mode(plain, blksize, cipher.encrypt)
 
-    iv = rand_bytes_gen(16)
+        iv = rand_bytes_gen(blksize)
 
-    print("encrypt: CBC")
-    return cbc_mode(plain, 16, iv, encrypt)
+        # print("CBC")
+        return cbc_mode(plain, blksize, iv, cipher.encrypt)
+
+    return encryption_oracle
 
 
-def ecb_cbc_detect(fun: Callable[[bytes], bytes]) -> str:
+def is_ecb(encrypt: Callable[[bytes], bytes], blksize: int = 16) \
+        -> bool:
     """
     params:
-        fun: encrypts bytes using either ECB or CBC mode
+        encrypt: encrypts bytes using either ECB or CBC mode
     returns:
-        "ECB" if `fun` used ECB mode
-        "CBC" otherwise
+        True if `encrypt` used ECB mode, False otherwise
     """
-    input_bytes = bytes(16*4)   # four blocks of zeroes
-    res = fun(input_bytes)
+    input_bytes = bytes(blksize*4)   # four blocks of zeroes
+    res = encrypt(input_bytes)
     block_count = defaultdict(lambda: 0)
-    for block in blocks(res, 16):
+    for block in blocks(res, blksize):
         block_count[block] += 1
         if block_count[block] >= 3:
-            return "ECB"
-    return "CBC"
+            return True
+    return False
 
 
 def main():
@@ -79,7 +94,7 @@ def main():
     run `ecb_cbc_detect()` a few times to check that it works
     """
     for i in range(100):
-        print(ecb_cbc_detect(encryption_oracle))
+        print(is_ecb(gen_encryption_oracle()))
 
 
 if __name__ == "__main__":
