@@ -10,21 +10,15 @@ from set2.challenge11.rand_enc import rand_bytes_gen, is_ecb
 
 CONSISTENT_KEY = rand_bytes_gen(16)
 
-def gen_encryption_oracle(blksize: int = 16) -> Callable[[bytes], bytes]:
+def gen_encryption_oracle(blksize: int = 16, unknownstr: str = None) \
+        -> Callable[[bytes], bytes]:
     """
     params:
         blksize: blocksize `encryption_oracle` should use
     returns:
         `encryption_oracle` method
     """
-    def encryption_oracle(b: bytes) -> bytes:
-        """
-        params:
-            b: bytes to encrypt
-        returns:
-            `b` encrypted using AES-128-ECB
-            appends `unknownstr` to `b` before encrypting
-        """
+    if not unknownstr:
         b64bytes = (
             b"Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkg"
             b"aGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBq"
@@ -33,6 +27,14 @@ def gen_encryption_oracle(blksize: int = 16) -> Callable[[bytes], bytes]:
         )
         unknownstr = base64.b64decode(b64bytes)
 
+    def encryption_oracle(b: bytes) -> bytes:
+        """
+        params:
+            b: bytes to encrypt
+        returns:
+            `b` encrypted using AES-128-ECB
+            appends `unknownstr` to `b` before encrypting
+        """
         plain = pkcs7_pad(b+unknownstr, blksize)
         cipher = AES.new(CONSISTENT_KEY, AES.MODE_ECB)
 
