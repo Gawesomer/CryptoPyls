@@ -88,3 +88,39 @@ class TestCookie(unittest.TestCase):
         actual_decoded = decode_cookie(encoded)
 
         self.assertEqual(expected_decoded, actual_decoded)
+
+    def test_encode_cookie_cryptopals_case(self):
+        decoded = {
+          'foo': 'bar',
+          'baz': 'qux',
+          'zap': 'zazzle'
+        }
+        expected_encoded = "foo=bar&baz=qux&zap=zazzle"
+
+        actual_encoded = encode_cookie(decoded)
+
+        self.assertEqual(expected_encoded, actual_encoded)
+
+    def test_encode_cookie_empty_key_encodes_to_empty(self):
+        decoded = {
+          'foo': 'bar',
+          '': 'qux',
+          'zap': 'zazzle'
+        }
+        expected_encoded = "foo=bar&=qux&zap=zazzle"
+
+        actual_encoded = encode_cookie(decoded)
+
+        self.assertEqual(expected_encoded, actual_encoded)
+
+    def test_encode_cookie_empty_value_encodes_to_empty(self):
+        decoded = {
+          'foo': 'bar',
+          'baz': '',
+          'zap': 'zazzle'
+        }
+        expected_encoded = "foo=bar&baz=&zap=zazzle"
+
+        actual_encoded = encode_cookie(decoded)
+
+        self.assertEqual(expected_encoded, actual_encoded)
