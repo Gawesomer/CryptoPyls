@@ -56,3 +56,43 @@ class TestPKCS7Padding(unittest.TestCase):
         actual_padded = pkcs7_pad(b, 3)
 
         self.assertEqual(expected_padded, actual_padded)
+
+    def test_pkcs7_unpad_empty_bytes_returns_empty(self):
+        padded = b""
+        expected_bytes = b""
+
+        actual_bytes = pkcs7_unpad(padded)
+
+        self.assertEqual(expected_bytes, actual_bytes)
+
+    def test_pkcs7_unpad_all_padding_returns_empty(self):
+        padded = b"\x04\x04\x04\x04"
+        expected_bytes = b""
+
+        actual_bytes = pkcs7_unpad(padded)
+
+        self.assertEqual(expected_bytes, actual_bytes)
+
+    def test_pkcs7_unpad_cryptopals_case(self):
+        padded = b"YELLOW SUBMARINE\x04\x04\x04\x04"
+        expected_bytes = b"YELLOW SUBMARINE"
+
+        actual_bytes = pkcs7_unpad(padded)
+
+        self.assertEqual(expected_bytes, actual_bytes)
+
+    def test_pkcs7_unpad_whole_block_padding(self):
+        padded = b"YELLOW\x03\x03\x03"
+        expected_bytes = b"YELLOW"
+
+        actual_bytes = pkcs7_unpad(padded)
+
+        self.assertEqual(expected_bytes, actual_bytes)
+
+    def test_pkcs7_unpad_padding_value_larger_than_valid_returns_empty(self):
+        padded = b"YELLOW\x16\x16\x16"
+        expected_bytes = b""
+
+        actual_bytes = pkcs7_unpad(padded)
+
+        self.assertEqual(expected_bytes, actual_bytes)

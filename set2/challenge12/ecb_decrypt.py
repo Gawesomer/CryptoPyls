@@ -10,6 +10,7 @@ from set2.challenge11.rand_enc import rand_bytes_gen, is_ecb
 
 CONSISTENT_KEY = rand_bytes_gen(16)
 
+
 def gen_encryption_oracle(blksize: int = 16, unknownstr: str = None) \
         -> Callable[[bytes], bytes]:
     """
