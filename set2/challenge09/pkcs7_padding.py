@@ -1,21 +1,35 @@
 import sys
 
 
-def pkcs7_pad(b: bytes, blk_size: int) -> bytes:
+def pkcs7_pad(b: bytes, blksize: int) -> bytes:
     """
     params:
         b: bytes to be padded
-        blk_size: positive integer < 256
+        blksize: positive integer < 256
     returns:
-        `b` padded to `blk_size`
+        `b` padded to `blksize`
         the blocks added have a value equal to the number of blocks added
-        if size of `b` is a multiple of `blk_size` another block of bytes with
-        value `blk_size` is added
+        if size of `b` is a multiple of `blksize` another block of bytes with
+        value `blksize` is added
     """
-    if blk_size <= 0 or blk_size >= 256:
+    if blksize <= 0 or blksize >= 256:
         return b
 
-    num_pads = blk_size - (len(b) % blk_size)
+    num_pads = blksize - (len(b) % blksize)
     for i in range(num_pads):
         b += num_pads.to_bytes(1, byteorder=sys.byteorder)
     return b
+
+
+def pkcs7_unpad(b: bytes) -> bytes:
+    """
+    params:
+        b: bytes that have been padded using pkcs7_pad
+    returns:
+        `b` without the padding
+    """
+    if len(b) == 0:
+        return b''
+
+    num_pads = b[-1]
+    return b[:-1*num_pads]
