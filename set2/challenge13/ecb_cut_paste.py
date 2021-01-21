@@ -1,6 +1,6 @@
 from Crypto.Cipher import AES
 
-from set1.challenge07.ecb_mode import ecb_mode
+from set1.challenge07.ecb_mode import ecb_mode, get_block_n
 from set2.challenge09.pkcs7_padding import *
 from set2.challenge11.rand_enc import rand_bytes_gen
 from set2.challenge13.cookie import *
@@ -51,3 +51,26 @@ def decrypt_profile(encrypted: bytes) -> str:
     padded = ecb_mode(encrypted, 16, cipher.decrypt)
 
     return pkcs7_unpad(padded).decode()
+
+
+def main():
+    """
+    build an admin profile
+    this must be done only by using `encrypt_profile(profile_for(input))`
+    i.e. we may only control `input`
+    """
+    trap_email = "10_PADDINGadmin\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b"
+    encrypted = encrypt_profile(profile_for(trap_email))
+    admin_block = get_block_n(encrypted, 16, 1)
+    valid_email = "haha_you.just_got?@hacked.com"
+    encrypted = encrypt_profile(profile_for(valid_email))
+
+    admin_profile_encrypted = get_block_n(encrypted, 16, 0) + \
+        get_block_n(encrypted, 16, 1) + get_block_n(encrypted, 16, 2) + \
+        admin_block
+
+    print(decode_cookie(decrypt_profile(admin_profile_encrypted)))
+
+
+if __name__ == "__main__":
+    main()
