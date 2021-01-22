@@ -2,9 +2,9 @@ import base64
 from Crypto.Cipher import AES
 import random
 import sys
-from typing import Callable, Tuple
+from typing import Callable
 
-from set1.challenge07.ecb_mode import ecb_mode, get_block_n, blocks
+from set1.challenge07.ecb_mode import ecb_mode, get_block_n
 from set2.challenge09.pkcs7_padding import pkcs7_pad
 from set2.challenge11.rand_enc import rand_bytes_gen, is_ecb
 from set2.challenge12.ecb_decrypt import determine_blksize
@@ -34,7 +34,7 @@ def gen_encryption_oracle(blksize: int = 16, unknownstr: bytes = None, randbytes
         unknownstr = base64.b64decode(b64bytes)
 
     if randbytes is None:
-        randbytes= rand_bytes_gen(random.randint(0, 255))
+        randbytes = rand_bytes_gen(random.randint(0, 255))
 
     def encryption_oracle(b: bytes) -> bytes:
         """
@@ -54,7 +54,7 @@ def gen_encryption_oracle(blksize: int = 16, unknownstr: bytes = None, randbytes
 
 
 def determine_randbytes_size(encrypt: Callable[[bytes], bytes], blksize: int) \
-        -> Tuple[int, int]:
+        -> int:
     """
     params:
         encrypt: encryption oracle generated from `gen_encryption_oracle`
@@ -113,7 +113,7 @@ def break_ecb(encrypt: Callable[[bytes], bytes]) -> bytes:
 
     offset = (randbytes_size//blksize)+1
     for i in range(numblks):
-        input_bytes = bytes(blksize-(randbytes_size%blksize)+blksize-1)
+        input_bytes = bytes(blksize-(randbytes_size % blksize)+blksize-1)
         for j in range(blksize):
             enc_blk = get_block_n(encrypt(input_bytes), blksize, i+offset)
 
