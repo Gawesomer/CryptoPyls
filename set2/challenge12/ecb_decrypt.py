@@ -11,11 +11,12 @@ from set2.challenge11.rand_enc import rand_bytes_gen, is_ecb
 CONSISTENT_KEY = rand_bytes_gen(16)
 
 
-def gen_encryption_oracle(blksize: int = 16, unknownstr: str = None) \
+def gen_encryption_oracle(blksize: int = 16, unknownstr: bytes = None) \
         -> Callable[[bytes], bytes]:
     """
     params:
         blksize: blocksize `encryption_oracle` should use
+        unknownstr: bytes that attacker should obtain
     returns:
         `encryption_oracle` method
     """
