@@ -7,6 +7,7 @@ from typing import Callable, Tuple
 from set1.challenge07.ecb_mode import ecb_mode, get_block_n, blocks
 from set2.challenge09.pkcs7_padding import pkcs7_pad
 from set2.challenge11.rand_enc import rand_bytes_gen, is_ecb
+from set2.challenge12.ecb_decrypt import determine_blksize
 
 
 CONSISTENT_KEY = rand_bytes_gen(16)
@@ -80,3 +81,63 @@ def determine_randbytes_size(encrypt: Callable[[bytes], bytes], blksize: int) \
         curr_block = get_block_n(encrypted, blksize, i)
 
     return (blksize*i + (blksize-len(input_bytes)+1))
+
+
+def break_ecb(encrypt: Callable[[bytes], bytes]) -> bytes:
+    """
+    params:
+        encrypt: encryption oracle generated from `gen_encryption_oracle`
+    returns:
+        `unknownstr` from the `encryption_oracle`
+        None if `encrypt` does not use ECB mode
+    """
+    input_bytes = bytes(1)
+    prev_cipher_size = len(encrypt(input_bytes))
+    curr_cipher_size = prev_cipher_size
+    while curr_cipher_size == prev_cipher_size:
+        input_bytes += b'\x00'
+        curr_cipher_size = len(encrypt(input_bytes))
+
+    blksize = (curr_cipher_size - prev_cipher_size)
+
+    randbytes_size = determine_randbytes_size(encrypt, blksize)
+
+    # copied determine_blksize() to also calculate expected message size
+    decrypted_size = prev_cipher_size - len(input_bytes) - randbytes_size
+
+    if not is_ecb(encrypt, blksize):
+        return None
+
+    numblks = len(encrypt(b''))//blksize
+    decrypted = b''
+
+    offset = (randbytes_size//blksize)+1
+    for i in range(numblks):
+        input_bytes = bytes(blksize-(randbytes_size%blksize)+blksize-1)
+        for j in range(blksize):
+            enc_blk = get_block_n(encrypt(input_bytes), blksize, i+offset)
+
+            block_to_byte = {}
+            for k in range(256):
+                b = k.to_bytes(1, byteorder=sys.byteorder)
+                last_blk = get_block_n(
+                    encrypt(input_bytes+decrypted+b), blksize, i+offset
+                )
+                block_to_byte[last_blk] = b
+
+            decrypted += block_to_byte.get(enc_blk, b'')
+            if len(decrypted) == decrypted_size:
+                return decrypted
+            input_bytes = input_bytes[:-1]
+
+    return decrypted
+
+
+def main():
+    encryption_oracle = gen_encryption_oracle()
+
+    print(break_ecb(encryption_oracle).decode())
+
+
+if __name__ == "__main__":
+    main()
