@@ -125,13 +125,20 @@ def break_cbc(encrypted: bytes, iv: bytes, padding_oracle: Callable[[bytes, byte
     returns:
         decrypted bytes for `encrypted`
     """
-    pass
+    decrypted = b''
+
+    prev_blk = iv
+    for curr_blk in blocks(encrypted, 16):
+        decrypted += break_cbc_single_blk(prev_blk, curr_blk, padding_oracle)
+        prev_blk = curr_blk
+
+    return pkcs7_unpad(decrypted)
 
 
 def main():
     encrypted, iv = encryption_oracle()
 
-    print(break_cbc(encrypted, iv, valid_padding).decode())
+    print(break_cbc(encrypted, iv, valid_padding))
 
 
 if __name__ == "__main__":

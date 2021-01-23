@@ -7,7 +7,6 @@ from set3.challenge17.cbc_padding import *
 
 class TestCBCPadding(unittest.TestCase):
 
-    """
     def test_valid_padding_integration_padding_is_valid(self):
         encrypted, iv = encryption_oracle()
 
@@ -19,7 +18,6 @@ class TestCBCPadding(unittest.TestCase):
             ((encrypted[-1]+1)%256).to_bytes(1, byteorder=sys.byteorder)
 
         self.assertFalse(valid_padding(encrypted, iv))
-    """
 
     def test_get_byte_n_empty_bytes_raises(self):
         with self.assertRaises(IndexError):
@@ -50,6 +48,6 @@ class TestCBCPadding(unittest.TestCase):
         cipher = AES.new(CONSISTENT_KEY, AES.MODE_ECB)
         encrypted = cbc_mode_encrypt(plain, 16, iv, cipher.encrypt)
 
-        decrypted = break_cbc_single_blk(encrypted, iv, valid_padding)
+        decrypted = break_cbc_single_blk(iv, encrypted, valid_padding)
 
         self.assertEqual(plain, decrypted)
