@@ -1,6 +1,10 @@
 import sys
 
 
+class InvalidPaddingException(Exception):
+    pass
+
+
 def pkcs7_pad(b: bytes, blksize: int) -> bytes:
     """
     params:
@@ -27,9 +31,19 @@ def pkcs7_unpad(b: bytes) -> bytes:
         b: bytes that have been padded using pkcs7_pad
     returns:
         `b` without the padding
+    raises:
+        InvalidPaddingException if `b` is not padded properly
     """
-    if len(b) == 0:
+    numbytes = len(b)
+    if numbytes == 0:
         return b''
 
-    num_pads = b[-1]
-    return b[:-1*num_pads]
+    numpads = b[-1]
+
+    if numpads > numbytes:
+        raise InvalidPaddingException
+    for i in range(numbytes-numpads, numbytes):
+        if b[i] != numpads:
+            raise InvalidPaddingException
+
+    return b[:-1*numpads]
