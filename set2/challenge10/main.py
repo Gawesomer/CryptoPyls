@@ -3,7 +3,7 @@ from Crypto.Cipher import AES
 import pathlib
 import os
 
-from set2.challenge10.cbc_mode import cbc_mode
+from set2.challenge10.cbc_mode import cbc_mode_decrypt
 
 
 def main():
@@ -20,7 +20,7 @@ def main():
     base64_bytes = base64_str.replace('\n', '').encode("utf-8")
     encrypted = base64.decodebytes(base64_bytes)
 
-    message = cbc_mode(encrypted, 16, iv, cipher.decrypt)
+    message = cbc_mode_decrypt(encrypted, 16, iv, cipher.decrypt)
 
     print(message.decode("utf-8", errors="ignore"))
 
