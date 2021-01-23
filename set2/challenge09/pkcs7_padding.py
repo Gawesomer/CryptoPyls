@@ -40,7 +40,7 @@ def pkcs7_unpad(b: bytes) -> bytes:
 
     numpads = b[-1]
 
-    if numpads > numbytes:
+    if numpads > numbytes or numpads <= 0:
         raise InvalidPaddingException
     for i in range(numbytes-numpads, numbytes):
         if b[i] != numpads:
