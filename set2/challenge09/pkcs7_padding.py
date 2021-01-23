@@ -17,7 +17,7 @@ def pkcs7_pad(b: bytes, blksize: int) -> bytes:
         value `blksize` is added
     """
     if blksize <= 0 or blksize >= 256:
-        return b
+        raise InvalidPaddingException("Invalid block size")
 
     num_pads = blksize - (len(b) % blksize)
     for i in range(num_pads):

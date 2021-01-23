@@ -17,29 +17,23 @@ class TestPKCS7Padding(unittest.TestCase):
 
         self.assertEqual(expected_padded, actual_padded)
 
-    def test_pkcs7_pad_zero_blk_size_returns_bytes_unchanged(self):
+    def test_pkcs7_pad_zero_blksize_raises(self):
         b = b'YELLOW SUBMARINE'
-        expected_padded = b"YELLOW SUBMARINE"
 
-        actual_padded = pkcs7_pad(b, 0)
+        with self.assertRaises(InvalidPaddingException):
+            pkcs7_pad(b, 0)
 
-        self.assertEqual(expected_padded, actual_padded)
-
-    def test_pkcs7_pad_negative_blk_size_returns_bytes_unchanged(self):
+    def test_pkcs7_pad_negative_blksize_raises(self):
         b = b'YELLOW SUBMARINE'
-        expected_padded = b"YELLOW SUBMARINE"
 
-        actual_padded = pkcs7_pad(b, -1)
+        with self.assertRaises(InvalidPaddingException):
+            pkcs7_pad(b, -1)
 
-        self.assertEqual(expected_padded, actual_padded)
-
-    def test_pkcs7_pad_blk_size_over_bounds_returns_bytes_unchanged(self):
+    def test_pkcs7_pad_blksize_over_bounds_raises(self):
         b = b'YELLOW SUBMARINE'
-        expected_padded = b"YELLOW SUBMARINE"
 
-        actual_padded = pkcs7_pad(b, 256)
-
-        self.assertEqual(expected_padded, actual_padded)
+        with self.assertRaises(InvalidPaddingException):
+            pkcs7_pad(b, 256)
 
     def test_pkcs7_pad_cryptopals_case(self):
         b = b"YELLOW SUBMARINE"
@@ -49,7 +43,7 @@ class TestPKCS7Padding(unittest.TestCase):
 
         self.assertEqual(expected_padded, actual_padded)
 
-    def test_pkcs7_pad_bytes_size_mutliple_of_blk_size_adds_extra_block(self):
+    def test_pkcs7_pad_bytes_size_mutliple_of_blksize_adds_extra_block(self):
         b = b"YELLOW"
         expected_padded = b"YELLOW\x03\x03\x03"
 
