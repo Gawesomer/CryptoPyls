@@ -1,11 +1,14 @@
 import base64
 from Crypto.Cipher import AES
 import random
+import sys
 from typing import Tuple
 
+from set1.challenge07.ecb_mode import blocks
 from set2.challenge09.pkcs7_padding import *
 from set2.challenge10.cbc_mode import *
 from set2.challenge11.rand_enc import rand_bytes_gen
+from set2.challenge12.ecb_decrypt import determine_blksize
 
 
 CONSISTENT_KEY = rand_bytes_gen(16)
@@ -66,3 +69,70 @@ def valid_padding(encrypted: bytes, iv: bytes) -> bool:
         return True
     except InvalidPaddingException:
         return False
+
+
+def get_byte_n(b: bytes, n: int) -> bytes:
+    """
+    params:
+        b
+        n
+    returns:
+        b[n] as a bytes object
+    """
+    return b[n].to_bytes(1, byteorder=sys.byteorder)
+
+
+def break_cbc_single_blk(
+        cipher_blk1: bytes,
+        cipher_blk2: bytes,
+        padding_oracle: Callable[[bytes, bytes], bool]) \
+        -> bytes:
+    """
+    params:
+        cipher_blk1: encrypted block prior to `cipher_blk2` or IV if
+                     `cipher_blk2` was the first encrypted block
+        cipher_blk2: block to be decrypted
+        padding_oracle: `valid_padding()`
+    returns:
+        decryption of `cipher_blk2`
+    """
+    intermediate_blk2 = b''
+    plain_blk2 = b''
+
+    for i in range(1, 17):
+        target_byte = i.to_bytes(1, byteorder=sys.byteorder)
+        atk_blk_prefix = rand_bytes_gen(16-i)
+        atk_blk_suffix = b''
+        for k in range(len(intermediate_blk2)):
+            atk_blk_suffix += xor(target_byte, get_byte_n(intermediate_blk2, k))
+        for j in range(256):
+            atk_byte = j.to_bytes(1, byteorder=sys.byteorder)
+            if valid_padding(cipher_blk2, atk_blk_prefix+atk_byte+atk_blk_suffix):
+                break
+        intermediate_blk2 = xor(atk_byte, target_byte) + intermediate_blk2
+        plain_blk2 = xor(intermediate_blk2, get_byte_n(cipher_blk1, -i)) + plain_blk2
+
+    return plain_blk2
+
+
+def break_cbc(encrypted: bytes, iv: bytes, padding_oracle: Callable[[bytes, bytes], bool]) \
+        -> bytes:
+    """
+    params:
+        encrypted: encrypted message from `encryption_oracle()`
+        iv: IV used for encryption from `encryption_oracle()`
+        padding_oracle: `valid_padding()`
+    returns:
+        decrypted bytes for `encrypted`
+    """
+    pass
+
+
+def main():
+    encrypted, iv = encryption_oracle()
+
+    print(break_cbc(encrypted, iv, valid_padding).decode())
+
+
+if __name__ == "__main__":
+    main()
