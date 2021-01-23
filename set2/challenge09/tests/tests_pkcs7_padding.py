@@ -89,10 +89,20 @@ class TestPKCS7Padding(unittest.TestCase):
 
         self.assertEqual(expected_bytes, actual_bytes)
 
-    def test_pkcs7_unpad_padding_value_larger_than_valid_returns_empty(self):
+    def test_pkcs7_unpad_padding_value_larger_than_valid_raises(self):
         padded = b"YELLOW\x16\x16\x16"
-        expected_bytes = b""
 
-        actual_bytes = pkcs7_unpad(padded)
+        with self.assertRaises(InvalidPaddingException):
+            pkcs7_unpad(padded)
 
-        self.assertEqual(expected_bytes, actual_bytes)
+    def test_pkcs7_unpad_padding_value_incosistent(self):
+        padded = b"ICE ICE BABY\x01\x02\x03\x04"
+
+        with self.assertRaises(InvalidPaddingException):
+            pkcs7_unpad(padded)
+
+    def test_pkcs7_unpad_padding_value_does_not_match_number_of_pads(self):
+        padded = b"ICE ICE BABY\x05\x05\x05\x05"
+
+        with self.assertRaises(InvalidPaddingException):
+            pkcs7_unpad(padded)
