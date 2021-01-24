@@ -100,3 +100,9 @@ class TestPKCS7Padding(unittest.TestCase):
 
         with self.assertRaises(InvalidPaddingException):
             pkcs7_unpad(padded)
+
+    def test_pkcs7_unpad_padding_ending_with_zero_raises(self):
+        padded = b"YELLOW\x00"
+
+        with self.assertRaises(InvalidPaddingException):
+            pkcs7_unpad(padded)
