@@ -120,16 +120,16 @@ class TestECBMode(unittest.TestCase):
         b = b"\x00\x01\x00\x01\x23"
 
         with self.assertRaises(ValueError):
-            actual_bytes = ecb.encrypt(b)
+            ecb.encrypt(b)
 
     def test_decrypt_bytes_not_padded_raises(self):
         ecb = ECBMode(2, self.mock_fun, self.mock_fun)
         b = b"\x00\x01\x00\x01\x23"
 
         with self.assertRaises(ValueError):
-            actual_bytes = ecb.decrypt(b)
+            ecb.decrypt(b)
 
-    def test_encrypt_decrypt_integration(self):
+    def test_encrypt_decrypt_integration_case(self):
         key = b"YELLOW SUBMARINE"
         cipher = AES.new(key, AES.MODE_ECB)
         ecb = ECBMode(16, cipher.encrypt, cipher.decrypt)

@@ -1,7 +1,7 @@
 import unittest
 import sys
 
-from set2.challenge10.cbc_mode import *
+from set2.challenge10.cbc_mode import CBCMode
 from set3.challenge17.cbc_padding import *
 
 
@@ -46,7 +46,8 @@ class TestCBCPadding(unittest.TestCase):
         iv = b"abcdefghijklmnop"
 
         cipher = AES.new(CONSISTENT_KEY, AES.MODE_ECB)
-        encrypted = cbc_mode_encrypt(plain, 16, iv, cipher.encrypt)
+        cbc = CBCMode(16, cipher.encrypt, cipher.decrypt, iv=iv)
+        encrypted = cbc.encrypt(plain)
 
         decrypted = break_cbc_single_blk(iv, encrypted, valid_padding)
 

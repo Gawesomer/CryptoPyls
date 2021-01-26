@@ -1,50 +1,48 @@
+from __future__ import annotations
 from typing import Callable
 
 from set1.challenge02.fixed_xor import xor
-from set1.challenge07.ecb_mode import blocks
+from set1.challenge07.ecb_mode import blocks, BlockCipherMode
 
 
-def cbc_mode_encrypt(b: bytes, blksize: int, iv: bytes, fun: Callable[[bytes], bytes]) \
-        -> bytes:
-    """
-    params:
-        b: should be padded to have size divisible by `blksize`
-        blksize: positive integer
-        iv: should be of size `blksize` if larger extraneous bytes are ignored
-        fun: function to apply on each block
-    returns:
-        concatenation of results of applying `fun` on each block of `b`
-        whilst XORing result of previous block with next block
-        if size of `b` was not divisible by `blksize` last block is ignored
-    """
-    res = b''
-    if len(iv) < blksize:
-        return res
+class CBCMode(BlockCipherMode):
 
-    for block in blocks(b, blksize):
-        iv = fun(xor(block, iv))
-        res += iv
+    def encrypt(self: CBCMode, plaintext: bytes) -> bytes:
+        """
+        XORs each block with the cipher of the previous block (or the IV if
+        first block), then encrypts
+        raises:
+            ValueError: if size of `plaintext` is not divisible by
+                        `self.blksize`
+        """
+        if len(plaintext) % self.blksize != 0:
+            raise ValueError("plaintext is not %s-bit padded" % self.blksize)
 
-    return res
+        ciphertext = b''
 
+        prev_cipherblk = self.iv
+        for block in blocks(plaintext, self.blksize):
+            prev_cipherblk = self.encrypt_blk(xor(block, prev_cipherblk))
+            ciphertext += prev_cipherblk
 
-def cbc_mode_decrypt(b: bytes, blksize: int, iv: bytes, fun: Callable[[bytes], bytes]) \
-        -> bytes:
-    """
-    params:
-        b: should be padded to have size divisible by `blksize`
-        blksize: positive integer
-        iv: should be of size `blksize` if larger extraneous bytes are ignored
-        fun: function to apply on each block
-    returns:
-        concatenation of results of applying `fun` on each block of `b`
-        whilst XORing result of previous block with next block
-        if size of `b` was not divisible by `blksize` last block is ignored
-    """
-    res = b''
+        return ciphertext
 
-    for block in blocks(b, blksize):
-        res += xor(fun(block), iv)
-        iv = block
+    def decrypt(self: CBCMode, ciphertext: bytes) -> bytes:
+        """
+        decrypts each block, then XORs with cipher of the previous block
+        (or IV if first block)
+        raises:
+            ValueError: if size of `plaintext` is not divisible by
+                        `self.blksize`
+        """
+        if len(ciphertext) % self.blksize != 0:
+            raise ValueError("ciphertext is not %s-bit padded" % self.blksize)
 
-    return res
+        plaintext = b''
+
+        prev_cipherblk = self.iv
+        for block in blocks(ciphertext, self.blksize):
+            plaintext += xor(self.decrypt_blk(block), prev_cipherblk)
+            prev_cipherblk = block
+
+        return plaintext

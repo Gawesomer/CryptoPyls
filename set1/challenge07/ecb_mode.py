@@ -35,13 +35,14 @@ def blocks(b: bytes, blk_size: int) -> bytes:
         yield get_block_n(b, blk_size, i)
 
 
-class BlockCipherMode():
+class BlockCipherMode:
 
     def __init__(
             self: BlockCipherMode,
             blksize: int,
             encrypt_blk: Callable[[bytes], bytes],
-            decrypt_blk: Callable[[bytes], bytes]) \
+            decrypt_blk: Callable[[bytes], bytes],
+            iv: bytes = None) \
             -> BlockCipherMode:
         """
         params:
@@ -49,17 +50,22 @@ class BlockCipherMode():
             encrypt_blk: block cipher encryption transform operating on blocks
                          of size `blksize`
             decrypt_blk: inverse of `encrypt`
+            iv: used to initialize CBCMode
+                should be of size `blksize`
         raises:
-            ValueError: if `blksize` is invalid
+            ValueError: on invalid input
         """
         if blksize <= 0:
             raise ValueError("Invalid blksize: %s" % blksize)
+        if iv is not None and len(iv) != blksize:
+            raise ValueError("IV is not same size as blksize")
 
         self.blksize = blksize
         self.encrypt_blk = encrypt_blk
         self.decrypt_blk = decrypt_blk
+        self.iv = iv
 
-    def encrypt(self, plaintext: bytes):
+    def encrypt(self: BlockCipherMode, plaintext: bytes) -> bytes:
         """
         params:
             plaintext: bytes to encrypt
@@ -70,7 +76,7 @@ class BlockCipherMode():
         """
         raise(NotImplementedError)
 
-    def decrypt(self, ciphertext: bytes):
+    def decrypt(self: BlockCipherMode, ciphertext: bytes) -> bytes:
         """
         params:
             ciphertext: bytes to decrypt
@@ -87,7 +93,7 @@ class ECBMode(BlockCipherMode):
     Applies the cipher to each block individually
     """
 
-    def encrypt(self, plaintext: bytes):
+    def encrypt(self: ECBMode, plaintext: bytes) -> bytes:
         """
         raises:
             ValueError: if size of `plaintext` is not divisible by
@@ -103,7 +109,7 @@ class ECBMode(BlockCipherMode):
 
         return ciphertext
 
-    def decrypt(self, ciphertext: bytes) -> bytes:
+    def decrypt(self: ECBMode, ciphertext: bytes) -> bytes:
         """
         raises:
             ValueError: if size of `ciphertext` is not divisible by
