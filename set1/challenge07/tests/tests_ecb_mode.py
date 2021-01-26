@@ -1,3 +1,4 @@
+from Crypto.Cipher import AES
 import unittest
 import sys
 
@@ -5,13 +6,7 @@ from set1.challenge02.fixed_xor import xor
 from set1.challenge07.ecb_mode import *
 
 
-class TestECBMode(unittest.TestCase):
-
-    def mock_fun(self, b: bytes) -> bytes:
-        operand = b''
-        for i in range(len(b)):
-            operand += i.to_bytes(1, byteorder=sys.byteorder)
-        return xor(b, operand)
+class TestBlocks(unittest.TestCase):
 
     def test_get_block_n_get_first_block(self):
         b = b"ABCDEF"
@@ -89,38 +84,61 @@ class TestECBMode(unittest.TestCase):
         for i, block in enumerate(blocks(b, 2)):
             self.assertEqual(expected_blocks[i], block)
 
-    def test_ecb_mode_none_bytes_raises_typeerror(self):
+
+class TestECBMode(unittest.TestCase):
+
+    def mock_fun(self, b: bytes) -> bytes:
+        operand = b''
+        for i in range(len(b)):
+            operand += i.to_bytes(1, byteorder=sys.byteorder)
+        return xor(b, operand)
+
+    def test_init_zero_blksize_raises(self):
+        with self.assertRaises(ValueError):
+            ECBMode(0, self.mock_fun, self.mock_fun)
+
+    def test_init_negative_blksize_raises(self):
+        with self.assertRaises(ValueError):
+            ECBMode(-1, self.mock_fun, self.mock_fun)
+
+    def test_encrypt_none_bytes_raises_typeerror(self):
+        ecb = ECBMode(1, self.mock_fun, self.mock_fun)
         with self.assertRaises(TypeError):
-            ecb_mode(None, 1, self.mock_fun)
+            ecb.encrypt(None)
 
-    def test_ecb_mode_zero_blksize_returns_empty_bytes(self):
-        b = b"\x00\x01\x00\x01"
-        expected_bytes = b''
-
-        actual_bytes = ecb_mode(b, 0, self.mock_fun)
-
-        self.assertEqual(expected_bytes, actual_bytes)
-
-    def test_ecb_mode_negative_blksize_returns_empty_bytes(self):
-        b = b"\x00\x01\x00\x01"
-        expected_bytes = b''
-
-        actual_bytes = ecb_mode(b, -1, self.mock_fun)
-
-        self.assertEqual(expected_bytes, actual_bytes)
-
-    def test_ecb_mode_bytes_of_proper_length(self):
+    def test_encrypt_bytes_of_proper_length(self):
+        ecb = ECBMode(2, self.mock_fun, self.mock_fun)
         b = b"\x00\x01\x00\x01"
         expected_bytes = b"\x00\x00\x00\x00"
 
-        actual_bytes = ecb_mode(b, 2, self.mock_fun)
+        actual_bytes = ecb.encrypt(b)
 
         self.assertEqual(expected_bytes, actual_bytes)
 
-    def test_ecb_mode_bytes_not_padded_ignores_extraneous(self):
+    def test_encrypt_bytes_not_padded_raises(self):
+        ecb = ECBMode(2, self.mock_fun, self.mock_fun)
         b = b"\x00\x01\x00\x01\x23"
-        expected_bytes = b"\x00\x00\x00\x00"
 
-        actual_bytes = ecb_mode(b, 2, self.mock_fun)
+        with self.assertRaises(ValueError):
+            actual_bytes = ecb.encrypt(b)
 
-        self.assertEqual(expected_bytes, actual_bytes)
+    def test_decrypt_bytes_not_padded_raises(self):
+        ecb = ECBMode(2, self.mock_fun, self.mock_fun)
+        b = b"\x00\x01\x00\x01\x23"
+
+        with self.assertRaises(ValueError):
+            actual_bytes = ecb.decrypt(b)
+
+    def test_encrypt_decrypt_integration(self):
+        key = b"YELLOW SUBMARINE"
+        cipher = AES.new(key, AES.MODE_ECB)
+        ecb = ECBMode(16, cipher.encrypt, cipher.decrypt)
+        plaintext = (b"Lorem ipsum dolo"
+                     b"r sit amet, cons"
+                     b"ectetur adipisci"
+                     b"ng elitAAAAAAAAA")
+
+        encrypted = ecb.encrypt(plaintext)
+        decrypted = ecb.decrypt(encrypted)
+
+        self.assertEqual(plaintext, decrypted)

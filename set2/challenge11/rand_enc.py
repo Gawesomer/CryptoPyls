@@ -4,7 +4,7 @@ import random
 import sys
 from typing import Callable
 
-from set1.challenge07.ecb_mode import ecb_mode, blocks
+from set1.challenge07.ecb_mode import ECBMode, blocks
 from set2.challenge09.pkcs7_padding import pkcs7_pad
 from set2.challenge10.cbc_mode import cbc_mode_encrypt
 
@@ -58,10 +58,11 @@ def gen_encryption_oracle(blksize: int = 16, use_ecb: bool = None) \
         plain = pkcs7_pad(prefix+b+suffix, blksize)
         key = rand_bytes_gen(blksize)
         cipher = AES.new(key, AES.MODE_ECB)
+        ecb = ECBMode(blksize, cipher.encrypt, cipher.decrypt)
 
         if use_ecb:
             # print("ECB")  # for manual verification
-            return ecb_mode(plain, blksize, cipher.encrypt)
+            return ecb.encrypt(plain)
 
         iv = rand_bytes_gen(blksize)
 
