@@ -42,7 +42,7 @@ class BlockCipherMode:
             blksize: int,
             encrypt_blk: Callable[[bytes], bytes],
             decrypt_blk: Callable[[bytes], bytes],
-            iv: bytes = None) \
+            **kwargs: dict) \
             -> BlockCipherMode:
         """
         params:
@@ -50,20 +50,15 @@ class BlockCipherMode:
             encrypt_blk: block cipher encryption transform operating on blocks
                          of size `blksize`
             decrypt_blk: inverse of `encrypt`
-            iv: used to initialize CBCMode
-                should be of size `blksize`
         raises:
             ValueError: on invalid input
         """
         if blksize <= 0:
             raise ValueError("Invalid blksize: %s" % blksize)
-        if iv is not None and len(iv) != blksize:
-            raise ValueError("IV is not same size as blksize")
 
         self.blksize = blksize
         self.encrypt_blk = encrypt_blk
         self.decrypt_blk = decrypt_blk
-        self.iv = iv
 
     def encrypt(self: BlockCipherMode, plaintext: bytes) -> bytes:
         """
