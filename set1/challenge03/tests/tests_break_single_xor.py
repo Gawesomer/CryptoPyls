@@ -1,6 +1,7 @@
 import unittest
 
-from set1.challenge03.break_single_xor import *
+from set1.challenge03.break_single_xor import ENGLISH_LETTER_FREQ, \
+    break_single_xor, freq_score
 
 
 class TestFreqScore(unittest.TestCase):
