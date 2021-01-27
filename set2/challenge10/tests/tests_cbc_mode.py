@@ -17,20 +17,35 @@ class TestCBCMode(unittest.TestCase):
         iv = b"\x03\x03\x23"
 
         with self.assertRaises(ValueError):
-            CBCMode(2, self.mock_fun, self.mock_fun, iv=iv)
+            CBCMode(
+                blksize=2,
+                encrypt_blk=self.mock_fun,
+                decrypt_blk=self.mock_fun,
+                iv=iv,
+            )
 
     def test_init_iv_smaller_than_blksize_returns_empty_bytes(self):
         iv = b"\x03"
 
         with self.assertRaises(ValueError):
-            CBCMode(2, self.mock_fun, self.mock_fun, iv=iv)
+            CBCMode(
+                blksize=2,
+                encrypt_blk=self.mock_fun,
+                decrypt_blk=self.mock_fun,
+                iv=iv,
+            )
 
     def test_encrypt_bytes_of_proper_length(self):
         b = b"\x00\x01\x00\x01"
         iv = b"\x03\x03"
         expected_bytes = b"\x03\x03\x03\x03"
 
-        cbc = CBCMode(2, self.mock_fun, self.mock_fun, iv=iv)
+        cbc = CBCMode(
+            blksize=2,
+            encrypt_blk=self.mock_fun,
+            decrypt_blk=self.mock_fun,
+            iv=iv,
+        )
         actual_bytes = cbc.encrypt(b)
 
         self.assertEqual(expected_bytes, actual_bytes)
@@ -38,7 +53,12 @@ class TestCBCMode(unittest.TestCase):
     def test_encrypt_bytes_not_padded_raises(self):
         b = b"\x00\x01\x00\x01\x23"
         iv = b"\x03\x03"
-        cbc = CBCMode(2, self.mock_fun, self.mock_fun, iv=iv)
+        cbc = CBCMode(
+            blksize=2,
+            encrypt_blk=self.mock_fun,
+            decrypt_blk=self.mock_fun,
+            iv=iv,
+        )
 
         with self.assertRaises(ValueError):
             cbc.encrypt(b)
@@ -46,7 +66,12 @@ class TestCBCMode(unittest.TestCase):
     def test_decrypt_bytes_not_padded_raises(self):
         b = b"\x00\x01\x00\x01\x23"
         iv = b"\x03\x03"
-        cbc = CBCMode(2, self.mock_fun, self.mock_fun, iv=iv)
+        cbc = CBCMode(
+            blksize=2,
+            encrypt_blk=self.mock_fun,
+            decrypt_blk=self.mock_fun,
+            iv=iv,
+        )
 
         with self.assertRaises(ValueError):
             cbc.decrypt(b)
@@ -55,7 +80,12 @@ class TestCBCMode(unittest.TestCase):
         key = b"YELLOW SUBMARINE"
         iv = b"THIS IS 16 BYTES"
         cipher = AES.new(key, AES.MODE_ECB)
-        cbc = CBCMode(16, cipher.encrypt, cipher.decrypt, iv=iv)
+        cbc = CBCMode(
+            blksize=16,
+            encrypt_blk=cipher.encrypt,
+            decrypt_blk=cipher.decrypt,
+            iv=iv,
+        )
         plaintext = (b"Lorem ipsum dolo"
                      b"r sit amet, cons"
                      b"ectetur adipisci"

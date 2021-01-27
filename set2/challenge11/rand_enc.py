@@ -65,7 +65,12 @@ def gen_encryption_oracle(blksize: int = 16, use_ecb: bool = None) \
             return ecb.encrypt(plain)
 
         iv = rand_bytes_gen(blksize)
-        cbc = CBCMode(blksize, cipher.encrypt, cipher.decrypt, iv=iv)
+        cbc = CBCMode(
+            blksize=blksize,
+            encrypt_blk=cipher.encrypt,
+            decrypt_blk=cipher.decrypt,
+            iv=iv
+        )
 
         # print("CBC")
         return cbc.encrypt(plain)

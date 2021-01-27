@@ -7,22 +7,18 @@ from set1.challenge07.ecb_mode import blocks, BlockCipherMode
 
 class CBCMode(BlockCipherMode):
 
-    def __init__(
-            self: CBCMode,
-            blksize: int,
-            encrypt_blk: Callable[[bytes], bytes],
-            decrypt_blk: Callable[[bytes], bytes],
-            **kwargs: dict) \
-            -> CBCMode:
+    def __init__(self: CBCMode, iv: bytes, **kwargs: dict) -> CBCMode:
         """
-        kwargs:
-            iv (required): used to initialize CBCMode
-                           should be of size `blksize`
+        params:
+            iv : used to initialize CBCMode
+                 should be of size `blksize`
         """
-        super().__init__(blksize, encrypt_blk, decrypt_blk, **kwargs)
-        self.iv = kwargs.get('iv')
-        if len(self.iv) != self.blksize:
+        super().__init__(**kwargs)
+
+        if len(iv) != self.blksize:
             raise ValueError("IV is not same size as blksize")
+
+        self.iv = iv
 
 
     def encrypt(self: CBCMode, plaintext: bytes) -> bytes:

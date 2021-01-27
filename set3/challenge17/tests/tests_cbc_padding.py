@@ -46,7 +46,12 @@ class TestCBCPadding(unittest.TestCase):
         iv = b"abcdefghijklmnop"
 
         cipher = AES.new(CONSISTENT_KEY, AES.MODE_ECB)
-        cbc = CBCMode(16, cipher.encrypt, cipher.decrypt, iv=iv)
+        cbc = CBCMode(
+            blksize=16,
+            encrypt_blk=cipher.encrypt,
+            decrypt_blk=cipher.decrypt,
+            iv=iv
+        )
         encrypted = cbc.encrypt(plain)
 
         decrypted = break_cbc_single_blk(iv, encrypted, valid_padding)

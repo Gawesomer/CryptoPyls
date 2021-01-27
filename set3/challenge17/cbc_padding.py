@@ -45,7 +45,12 @@ def encryption_oracle() -> Tuple[bytes, bytes]:
 
     cipher = AES.new(CONSISTENT_KEY, AES.MODE_ECB)
     iv = rand_bytes_gen(blksize)
-    cbc = CBCMode(blksize, cipher.encrypt, cipher.decrypt, iv=iv)
+    cbc = CBCMode(
+        blksize=blksize,
+        encrypt_blk=cipher.encrypt,
+        decrypt_blk=cipher.decrypt,
+        iv=iv
+    )
 
     encrypted = cbc.encrypt(padded)
 
@@ -64,7 +69,12 @@ def valid_padding(encrypted: bytes, iv: bytes) -> bool:
     blksize = len(CONSISTENT_KEY)
 
     cipher = AES.new(CONSISTENT_KEY, AES.MODE_ECB)
-    cbc = CBCMode(blksize, cipher.encrypt, cipher.decrypt, iv=iv)
+    cbc = CBCMode(
+        blksize=blksize,
+        encrypt_blk=cipher.encrypt,
+        decrypt_blk=cipher.decrypt,
+        iv=iv
+    )
     decrypted = cbc.decrypt(encrypted)
 
     try:

@@ -13,7 +13,12 @@ def main():
     key = b"YELLOW SUBMARINE"
     iv = bytes(16)
     cipher = AES.new(key, AES.MODE_ECB)
-    cbc = CBCMode(16, cipher.encrypt, cipher.decrypt, iv=iv)
+    cbc = CBCMode(
+        blksize=16,
+        encrypt_blk=cipher.encrypt,
+        decrypt_blk=cipher.decrypt,
+        iv=iv
+    )
 
     input_filename = os.path.join(pathlib.Path(__file__).parent, "input")
     with open(input_filename, 'r') as input_file:

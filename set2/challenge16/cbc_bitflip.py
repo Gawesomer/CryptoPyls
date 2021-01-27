@@ -41,9 +41,9 @@ def gen_encryption_oracle(blksize: int = 16, prefix: bytes = None, suffix: bytes
         plain = pkcs7_pad(prefix+cleaned_data+suffix, blksize)
         cipher = AES.new(CONSISTENT_KEY, AES.MODE_ECB)
         cbc = CBCMode(
-            blksize,
-            cipher.encrypt,
-            cipher.decrypt,
+            blksize=blksize,
+            encrypt_blk=cipher.encrypt,
+            decrypt_blk=cipher.decrypt,
             iv=CONSISTENT_IV,
         )
 
@@ -61,7 +61,12 @@ def is_admin(encrypted: bytes, blksize: int = 16) -> bool:
         True if decrypted message contains ";admin=true;", False otherwise
     """
     cipher = AES.new(CONSISTENT_KEY, AES.MODE_ECB)
-    cbc = CBCMode(blksize, cipher.encrypt, cipher.decrypt, iv=CONSISTENT_IV)
+    cbc = CBCMode(
+        blksize=blksize,
+        encrypt_blk=cipher.encrypt,
+        decrypt_blk=cipher.decrypt,
+        iv=CONSISTENT_IV
+    )
     padded = cbc.decrypt(encrypted)
     decrypted = pkcs7_unpad(padded)
 
