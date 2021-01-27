@@ -78,7 +78,7 @@ class CTRMode(BlockCipherMode):
 
         return nonce[:half_blksize] + blk_count.to_bytes(8, byteorder="little")
 
-    def encrypt(self: CBCMode, plaintext: bytes) -> bytes:
+    def encrypt(self: CTRMode, plaintext: bytes) -> bytes:
         """
         Use cipher to encrypt combination of nonce and block counter,
         then XORs the result with the block
@@ -96,7 +96,7 @@ class CTRMode(BlockCipherMode):
 
         return ciphertext
 
-    def decrypt(self: CBCMode, ciphertext: bytes) -> bytes:
+    def decrypt(self: CTRMode, ciphertext: bytes) -> bytes:
         """
         Use cipher to encrypt combination of nonce and block counter,
         then XORs the result with the block
