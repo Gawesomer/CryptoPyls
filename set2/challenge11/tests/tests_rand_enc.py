@@ -1,6 +1,7 @@
 import unittest
 
-from set2.challenge11.rand_enc import *
+from set2.challenge11.rand_enc import gen_encryption_oracle, is_ecb, \
+    rand_bytes_gen
 
 
 class TestRandEnc(unittest.TestCase):
