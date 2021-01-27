@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Callable
 
 from set1.challenge02.fixed_xor import xor
 from set1.challenge07.ecb_mode import get_block_n, BlockCipherMode
