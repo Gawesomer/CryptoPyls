@@ -1,6 +1,6 @@
 import unittest
 
-from set2.challenge16.cbc_bitflip import *
+from set2.challenge16.cbc_bitflip import gen_encryption_oracle, is_admin
 
 
 class TestCBCBitflip(unittest.TestCase):
