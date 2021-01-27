@@ -1,6 +1,7 @@
 import unittest
 
-from set2.challenge09.pkcs7_padding import *
+from set2.challenge09.pkcs7_padding import pkcs7_pad, pkcs7_unpad, \
+    InvalidPaddingException
 
 
 class TestPKCS7Padding(unittest.TestCase):
