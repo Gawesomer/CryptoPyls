@@ -3,7 +3,7 @@ from Crypto.Cipher import AES
 from typing import Callable
 import sys
 
-from set1.challenge07.ecb_mode import ecb_mode, get_block_n
+from set1.challenge07.ecb_mode import ECBMode, get_block_n
 from set2.challenge09.pkcs7_padding import pkcs7_pad
 from set2.challenge11.rand_enc import rand_bytes_gen, is_ecb
 
@@ -39,8 +39,9 @@ def gen_encryption_oracle(blksize: int = 16, unknownstr: bytes = None) \
         """
         plain = pkcs7_pad(b+unknownstr, blksize)
         cipher = AES.new(CONSISTENT_KEY, AES.MODE_ECB)
+        ecb = ECBMode(blksize, cipher.encrypt, cipher.decrypt)
 
-        return ecb_mode(plain, blksize, cipher.encrypt)
+        return ecb.encrypt(plain)
 
     return encryption_oracle
 

@@ -2,11 +2,12 @@ import base64
 from Crypto.Cipher import AES
 import random
 import sys
-from typing import Tuple
+from typing import Callable, Tuple
 
+from set1.challenge02.fixed_xor import xor
 from set1.challenge07.ecb_mode import blocks
 from set2.challenge09.pkcs7_padding import *
-from set2.challenge10.cbc_mode import *
+from set2.challenge10.cbc_mode import CBCMode
 from set2.challenge11.rand_enc import rand_bytes_gen
 from set2.challenge12.ecb_decrypt import determine_blksize
 
@@ -44,8 +45,14 @@ def encryption_oracle() -> Tuple[bytes, bytes]:
 
     cipher = AES.new(CONSISTENT_KEY, AES.MODE_ECB)
     iv = rand_bytes_gen(blksize)
+    cbc = CBCMode(
+        blksize=blksize,
+        encrypt_blk=cipher.encrypt,
+        decrypt_blk=cipher.decrypt,
+        iv=iv
+    )
 
-    encrypted = cbc_mode_encrypt(padded, blksize, iv, cipher.encrypt)
+    encrypted = cbc.encrypt(padded)
 
     return encrypted, iv
 
@@ -62,7 +69,13 @@ def valid_padding(encrypted: bytes, iv: bytes) -> bool:
     blksize = len(CONSISTENT_KEY)
 
     cipher = AES.new(CONSISTENT_KEY, AES.MODE_ECB)
-    decrypted = cbc_mode_decrypt(encrypted, blksize, iv, cipher.decrypt)
+    cbc = CBCMode(
+        blksize=blksize,
+        encrypt_blk=cipher.encrypt,
+        decrypt_blk=cipher.decrypt,
+        iv=iv
+    )
+    decrypted = cbc.decrypt(encrypted)
 
     try:
         pkcs7_unpad(decrypted)

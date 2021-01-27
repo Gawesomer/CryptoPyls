@@ -1,6 +1,6 @@
 from Crypto.Cipher import AES
 
-from set1.challenge07.ecb_mode import ecb_mode, get_block_n
+from set1.challenge07.ecb_mode import ECBMode, get_block_n
 from set2.challenge09.pkcs7_padding import *
 from set2.challenge11.rand_enc import rand_bytes_gen
 from set2.challenge13.cookie import *
@@ -36,8 +36,9 @@ def encrypt_profile(profile: str) -> bytes:
     blksize = 16
     plain = pkcs7_pad(profile.encode(), blksize)
     cipher = AES.new(CONSISTENT_KEY, AES.MODE_ECB)
+    ecb = ECBMode(blksize, cipher.encrypt, cipher.decrypt)
 
-    return ecb_mode(plain, blksize, cipher.encrypt)
+    return ecb.encrypt(plain)
 
 
 def decrypt_profile(encrypted: bytes) -> str:
@@ -48,7 +49,9 @@ def decrypt_profile(encrypted: bytes) -> str:
         encoded profile
     """
     cipher = AES.new(CONSISTENT_KEY, AES.MODE_ECB)
-    padded = ecb_mode(encrypted, 16, cipher.decrypt)
+    ecb = ECBMode(16, cipher.encrypt, cipher.decrypt)
+
+    padded = ecb.decrypt(encrypted)
 
     return pkcs7_unpad(padded).decode()
 

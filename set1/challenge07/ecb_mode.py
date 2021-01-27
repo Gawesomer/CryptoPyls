@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import Callable
 
 
@@ -34,19 +35,87 @@ def blocks(b: bytes, blk_size: int) -> bytes:
         yield get_block_n(b, blk_size, i)
 
 
-def ecb_mode(b: bytes, blk_size: int, fun: Callable[[bytes], bytes]) -> bytes:
-    """
-    params:
-        b: should be padded to have size divisible by `blk_size`
-        blk_size: positive integer
-        fun: function to apply on each block
-    returns:
-        concatenation of results of applying `fun` on each block of `b`
-        if size of `b` was not divisible by `blk_size` last block is ignored
-    """
-    res = b''
+class BlockCipherMode:
 
-    for block in blocks(b, blk_size):
-        res += fun(block)
+    def __init__(
+            self: BlockCipherMode,
+            blksize: int,
+            encrypt_blk: Callable[[bytes], bytes],
+            decrypt_blk: Callable[[bytes], bytes],
+            **kwargs: dict) \
+            -> BlockCipherMode:
+        """
+        params:
+            blksize: positive integer
+            encrypt_blk: block cipher encryption transform operating on blocks
+                         of size `blksize`
+            decrypt_blk: inverse of `encrypt`
+        raises:
+            ValueError: on invalid input
+        """
+        if blksize <= 0:
+            raise ValueError("Invalid blksize: %s" % blksize)
 
-    return res
+        self.blksize = blksize
+        self.encrypt_blk = encrypt_blk
+        self.decrypt_blk = decrypt_blk
+
+    def encrypt(self: BlockCipherMode, plaintext: bytes) -> bytes:
+        """
+        params:
+            plaintext: bytes to encrypt
+                       should be padded to have size divisible by
+                       `self.blksize`
+        returns:
+            `plaintext` encrypted
+        """
+        raise(NotImplementedError)
+
+    def decrypt(self: BlockCipherMode, ciphertext: bytes) -> bytes:
+        """
+        params:
+            ciphertext: bytes to decrypt
+                        should be padded to have size divisible by
+                        `self.blksize`
+        returns:
+            `ciphertext` decrypted
+        """
+        raise(NotImplementedError)
+
+
+class ECBMode(BlockCipherMode):
+    """
+    Applies the cipher to each block individually
+    """
+
+    def encrypt(self: ECBMode, plaintext: bytes) -> bytes:
+        """
+        raises:
+            ValueError: if size of `plaintext` is not divisible by
+                        `self.blksize`
+        """
+        if len(plaintext) % self.blksize != 0:
+            raise ValueError("plaintext is not %s-bit padded" % self.blksize)
+
+        ciphertext = b''
+
+        for block in blocks(plaintext, self.blksize):
+            ciphertext += self.encrypt_blk(block)
+
+        return ciphertext
+
+    def decrypt(self: ECBMode, ciphertext: bytes) -> bytes:
+        """
+        raises:
+            ValueError: if size of `ciphertext` is not divisible by
+                        `self.blksize`
+        """
+        if len(ciphertext) % self.blksize != 0:
+            raise ValueError("ciphertext is not %s-bit padded" % self.blksize)
+
+        plaintext = b''
+
+        for block in blocks(ciphertext, self.blksize):
+            plaintext += self.decrypt_blk(block)
+
+        return plaintext

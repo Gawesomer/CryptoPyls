@@ -3,7 +3,7 @@ from Crypto.Cipher import AES
 import pathlib
 import os
 
-from set2.challenge10.cbc_mode import cbc_mode_decrypt
+from set2.challenge10.cbc_mode import CBCMode
 
 
 def main():
@@ -13,6 +13,12 @@ def main():
     key = b"YELLOW SUBMARINE"
     iv = bytes(16)
     cipher = AES.new(key, AES.MODE_ECB)
+    cbc = CBCMode(
+        blksize=16,
+        encrypt_blk=cipher.encrypt,
+        decrypt_blk=cipher.decrypt,
+        iv=iv
+    )
 
     input_filename = os.path.join(pathlib.Path(__file__).parent, "input")
     with open(input_filename, 'r') as input_file:
@@ -20,7 +26,7 @@ def main():
     base64_bytes = base64_str.replace('\n', '').encode("utf-8")
     encrypted = base64.decodebytes(base64_bytes)
 
-    message = cbc_mode_decrypt(encrypted, 16, iv, cipher.decrypt)
+    message = cbc.decrypt(encrypted)
 
     print(message.decode("utf-8", errors="ignore"))
 

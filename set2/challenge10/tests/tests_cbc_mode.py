@@ -2,7 +2,6 @@ from Crypto.Cipher import AES
 import unittest
 import sys
 
-from set2.challenge09.pkcs7_padding import *
 from set2.challenge10.cbc_mode import *
 
 
@@ -14,73 +13,85 @@ class TestCBCMode(unittest.TestCase):
             operand += i.to_bytes(1, byteorder=sys.byteorder)
         return xor(b, operand)
 
-    def test_cbc_mode_encrypt_zero_blksize_return_empty_bytes(self):
-        b = b"\x00\x01\x00\x01"
-        iv = b"\x03\x03"
-        expected_bytes = b''
+    def test_init_iv_bigger_than_blksize_raises(self):
+        iv = b"\x03\x03\x23"
 
-        actual_bytes = cbc_mode_encrypt(b, 0, iv, self.mock_fun)
+        with self.assertRaises(ValueError):
+            CBCMode(
+                blksize=2,
+                encrypt_blk=self.mock_fun,
+                decrypt_blk=self.mock_fun,
+                iv=iv,
+            )
 
-        self.assertEqual(expected_bytes, actual_bytes)
+    def test_init_iv_smaller_than_blksize_returns_empty_bytes(self):
+        iv = b"\x03"
 
-    def test_cbc_mode_encrypt_negative_blksize_returns_empty_bytes(self):
-        b = b"\x00\x01\x00\x01"
-        iv = b"\x03\x03"
-        expected_bytes = b''
+        with self.assertRaises(ValueError):
+            CBCMode(
+                blksize=2,
+                encrypt_blk=self.mock_fun,
+                decrypt_blk=self.mock_fun,
+                iv=iv,
+            )
 
-        actual_bytes = cbc_mode_encrypt(b, -1, iv, self.mock_fun)
-
-        self.assertEqual(expected_bytes, actual_bytes)
-
-    def test_cbc_mode_encrypt_bytes_of_proper_length(self):
+    def test_encrypt_bytes_of_proper_length(self):
         b = b"\x00\x01\x00\x01"
         iv = b"\x03\x03"
         expected_bytes = b"\x03\x03\x03\x03"
 
-        actual_bytes = cbc_mode_encrypt(b, 2, iv, self.mock_fun)
+        cbc = CBCMode(
+            blksize=2,
+            encrypt_blk=self.mock_fun,
+            decrypt_blk=self.mock_fun,
+            iv=iv,
+        )
+        actual_bytes = cbc.encrypt(b)
 
         self.assertEqual(expected_bytes, actual_bytes)
 
-    def test_cbc_mode_encrypt_bytes_not_padded_ignores_extraneous(self):
+    def test_encrypt_bytes_not_padded_raises(self):
         b = b"\x00\x01\x00\x01\x23"
         iv = b"\x03\x03"
-        expected_bytes = b"\x03\x03\x03\x03"
+        cbc = CBCMode(
+            blksize=2,
+            encrypt_blk=self.mock_fun,
+            decrypt_blk=self.mock_fun,
+            iv=iv,
+        )
 
-        actual_bytes = cbc_mode_encrypt(b, 2, iv, self.mock_fun)
+        with self.assertRaises(ValueError):
+            cbc.encrypt(b)
 
-        self.assertEqual(expected_bytes, actual_bytes)
+    def test_decrypt_bytes_not_padded_raises(self):
+        b = b"\x00\x01\x00\x01\x23"
+        iv = b"\x03\x03"
+        cbc = CBCMode(
+            blksize=2,
+            encrypt_blk=self.mock_fun,
+            decrypt_blk=self.mock_fun,
+            iv=iv,
+        )
 
-    def test_cbc_mode_encrypt_iv_bigger_than_blksize_ignores_extraneous(self):
-        b = b"\x00\x01\x00\x01"
-        iv = b"\x03\x03\x23"
-        expected_bytes = b"\x03\x03\x03\x03"
+        with self.assertRaises(ValueError):
+            cbc.decrypt(b)
 
-        actual_bytes = cbc_mode_encrypt(b, 2, iv, self.mock_fun)
-
-        self.assertEqual(expected_bytes, actual_bytes)
-
-    def test_cbc_mode_encrypt_iv_smaller_than_blksize_returns_empty_bytes(self):
-        b = b"\x00\x01\x00\x01"
-        iv = b"\x03"
-        expected_bytes = b''
-
-        actual_bytes = cbc_mode_encrypt(b, 2, iv, self.mock_fun)
-
-        self.assertEqual(expected_bytes, actual_bytes)
-
-    def test_cbc_mode_decrypt_integration_case(self):
-        plain = (b"Hello world!"
-                 b"How are you today?"
-                 b"This string is getting quite long.")
+    def test_encrypt_decrypt_integration_case(self):
         key = b"YELLOW SUBMARINE"
         iv = b"THIS IS 16 BYTES"
-
         cipher = AES.new(key, AES.MODE_ECB)
+        cbc = CBCMode(
+            blksize=16,
+            encrypt_blk=cipher.encrypt,
+            decrypt_blk=cipher.decrypt,
+            iv=iv,
+        )
+        plaintext = (b"Lorem ipsum dolo"
+                     b"r sit amet, cons"
+                     b"ectetur adipisci"
+                     b"ng elitAAAAAAAAA")
 
-        padded = pkcs7_pad(plain, 16)
-        encrypted = cbc_mode_encrypt(padded, 16, iv, cipher.encrypt)
+        encrypted = cbc.encrypt(plaintext)
+        decrypted = cbc.decrypt(encrypted)
 
-        padded = cbc_mode_decrypt(encrypted, 16, iv, cipher.decrypt)
-        decrypted = pkcs7_unpad(padded)
-
-        self.assertEqual(plain, decrypted)
+        self.assertEqual(plaintext, decrypted)
