@@ -1,9 +1,9 @@
 from Crypto.Cipher import AES
 
 from set1.challenge07.ecb_mode import ECBMode, get_block_n
-from set2.challenge09.pkcs7_padding import *
+from set2.challenge09.pkcs7_padding import pkcs7_pad, pkcs7_unpad
 from set2.challenge11.rand_enc import rand_bytes_gen
-from set2.challenge13.cookie import *
+from set2.challenge13.cookie import decode_cookie, encode_cookie
 
 
 CONSISTENT_KEY = rand_bytes_gen(16)

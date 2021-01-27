@@ -3,7 +3,7 @@ import unittest
 import sys
 
 from set1.challenge02.fixed_xor import xor
-from set1.challenge07.ecb_mode import *
+from set1.challenge07.ecb_mode import get_block_n, blocks, ECBMode
 
 
 class TestBlocks(unittest.TestCase):

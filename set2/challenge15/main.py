@@ -1,4 +1,4 @@
-from set2.challenge09.pkcs7_padding import *
+from set2.challenge09.pkcs7_padding import pkcs7_unpad, InvalidPaddingException
 
 
 def main():

@@ -1,8 +1,14 @@
+from Crypto.Cipher import AES
 import unittest
 import sys
 
 from set2.challenge10.cbc_mode import CBCMode
-from set3.challenge17.cbc_padding import *
+from set3.challenge17.cbc_padding import \
+    CONSISTENT_KEY, \
+    break_cbc_single_blk, \
+    encryption_oracle, \
+    get_byte_n, \
+    valid_padding
 
 
 class TestCBCPadding(unittest.TestCase):
@@ -15,7 +21,7 @@ class TestCBCPadding(unittest.TestCase):
     def test_valid_padding_padding_is_invalid(self):
         encrypted, iv = encryption_oracle()
         encrypted = encrypted[:-1] + \
-            ((encrypted[-1]+1)%256).to_bytes(1, byteorder=sys.byteorder)
+            ((encrypted[-1]+1) % 256).to_bytes(1, byteorder=sys.byteorder)
 
         self.assertFalse(valid_padding(encrypted, iv))
 

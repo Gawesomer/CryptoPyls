@@ -1,5 +1,4 @@
 from __future__ import annotations
-from typing import Callable
 
 from set1.challenge02.fixed_xor import xor
 from set1.challenge07.ecb_mode import blocks, BlockCipherMode
@@ -19,7 +18,6 @@ class CBCMode(BlockCipherMode):
             raise ValueError("IV is not same size as blksize")
 
         self.iv = iv
-
 
     def encrypt(self: CBCMode, plaintext: bytes) -> bytes:
         """

@@ -3,7 +3,12 @@ import os
 import pathlib
 import unittest
 
-from set1.challenge06.break_repeat_xor import *
+from set1.challenge06.break_repeat_xor import \
+    break_repeat_xor, \
+    build_transposed, \
+    find_keysize, \
+    hamming_dist, \
+    normalized_blk_hamming_avg
 
 
 class TestHammingDistance(unittest.TestCase):

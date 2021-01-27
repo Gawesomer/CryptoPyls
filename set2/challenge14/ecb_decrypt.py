@@ -7,7 +7,6 @@ from typing import Callable
 from set1.challenge07.ecb_mode import ECBMode, get_block_n
 from set2.challenge09.pkcs7_padding import pkcs7_pad
 from set2.challenge11.rand_enc import rand_bytes_gen, is_ecb
-from set2.challenge12.ecb_decrypt import determine_blksize
 
 
 CONSISTENT_KEY = rand_bytes_gen(16)

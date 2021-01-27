@@ -6,10 +6,10 @@ from typing import Callable, Tuple
 
 from set1.challenge02.fixed_xor import xor
 from set1.challenge07.ecb_mode import blocks
-from set2.challenge09.pkcs7_padding import *
+from set2.challenge09.pkcs7_padding import pkcs7_pad, pkcs7_unpad, \
+    InvalidPaddingException
 from set2.challenge10.cbc_mode import CBCMode
 from set2.challenge11.rand_enc import rand_bytes_gen
-from set2.challenge12.ecb_decrypt import determine_blksize
 
 
 CONSISTENT_KEY = rand_bytes_gen(16)
@@ -26,9 +26,9 @@ def encryption_oracle() -> Tuple[bytes, bytes]:
     plain_strs = (
         b"MDAwMDAwTm93IHRoYXQgdGhlIHBhcnR5IGlzIGp1bXBpbmc=",
         b"MDAwMDAxV2l0aCB0aGUgYmFzcyBraWNrZWQgaW4gYW5kIHRoZSBWZWdhJ3MgYXJlIH" +
-            b"B1bXBpbic=",
+        b"B1bXBpbic=",
         b"MDAwMDAyUXVpY2sgdG8gdGhlIHBvaW50LCB0byB0aGUgcG9pbnQsIG5vIGZha2luZw" +
-            b"==",
+        b"==",
         b"MDAwMDAzQ29va2luZyBNQydzIGxpa2UgYSBwb3VuZCBvZiBiYWNvbg==",
         b"MDAwMDA0QnVybmluZyAnZW0sIGlmIHlvdSBhaW4ndCBxdWljayBhbmQgbmltYmxl",
         b"MDAwMDA1SSBnbyBjcmF6eSB3aGVuIEkgaGVhciBhIGN5bWJhbA==",

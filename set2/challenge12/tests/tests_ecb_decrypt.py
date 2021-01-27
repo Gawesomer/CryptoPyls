@@ -1,6 +1,7 @@
 import unittest
 
-from set2.challenge12.ecb_decrypt import *
+from set2.challenge12.ecb_decrypt import break_ecb, determine_blksize, \
+    gen_encryption_oracle
 
 
 class TestECBDecrypt(unittest.TestCase):

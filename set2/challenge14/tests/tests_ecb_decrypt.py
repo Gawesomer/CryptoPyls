@@ -1,7 +1,8 @@
 import unittest
 
 from set2.challenge11.rand_enc import rand_bytes_gen
-from set2.challenge14.ecb_decrypt import *
+from set2.challenge14.ecb_decrypt import break_ecb, determine_randbytes_size, \
+    gen_encryption_oracle
 
 
 class TestECBDecrypt(unittest.TestCase):

@@ -3,7 +3,7 @@ from typing import Callable
 
 from set1.challenge02.fixed_xor import xor
 from set1.challenge07.ecb_mode import blocks
-from set2.challenge09.pkcs7_padding import *
+from set2.challenge09.pkcs7_padding import pkcs7_pad, pkcs7_unpad
 from set2.challenge10.cbc_mode import CBCMode
 from set2.challenge11.rand_enc import rand_bytes_gen
 

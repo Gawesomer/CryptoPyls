@@ -1,8 +1,7 @@
 from Crypto.Cipher import AES
 import unittest
-import sys
 
-from set3.challenge18.ctr_mode import *
+from set3.challenge18.ctr_mode import CTRMode
 
 
 class TestCTRMode(unittest.TestCase):
@@ -76,10 +75,12 @@ class TestCTRMode(unittest.TestCase):
                      b"r sit amet, cons"
                      b"ectetur adipisci"
                      b"ng elitAAAAAAAAA")
-        expected_encrypted = (b":\xbe\xb9.\xc2\x82/\x92\x90\xdan}\x08|\xaf\x1d"
-                              b"\xa0\xcc\x1f\xb5\xecMs\xb3\xaa\xae3\xb3\xcc\x81\x1dk"
-                              b"H\xc3\xfa\xaee\x0eEk\xa2\xbe\xdeV\xdb\x8f\xe7\xa4"
-                              b"\xaf\xe7\x8bP%\x93\x1a\x14\x90\r'&\x88.\xe4\xf1")
+        expected_encrypted = (
+            b":\xbe\xb9.\xc2\x82/\x92\x90\xdan}\x08|\xaf\x1d"
+            b"\xa0\xcc\x1f\xb5\xecMs\xb3\xaa\xae3\xb3\xcc\x81\x1dk"
+            b"H\xc3\xfa\xaee\x0eEk\xa2\xbe\xdeV\xdb\x8f\xe7\xa4"
+            b"\xaf\xe7\x8bP%\x93\x1a\x14\x90\r'&\x88.\xe4\xf1"
+        )
 
         encrypted = ctr.encrypt(plaintext)
 
