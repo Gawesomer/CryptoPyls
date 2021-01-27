@@ -1,7 +1,7 @@
 import binascii
 import unittest
 
-from set1.challenge01.encode import *
+from set1.challenge01.encode import hextob64, b64tohex
 
 
 class TestEncode(unittest.TestCase):
