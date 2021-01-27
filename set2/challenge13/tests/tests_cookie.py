@@ -1,6 +1,6 @@
 import unittest
 
-from set2.challenge13.cookie import *
+from set2.challenge13.cookie import decode_cookie, encode_cookie
 
 
 class TestCookie(unittest.TestCase):

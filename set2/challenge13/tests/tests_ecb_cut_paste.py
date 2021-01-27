@@ -1,6 +1,7 @@
 import unittest
 
-from set2.challenge13.ecb_cut_paste import *
+from set2.challenge13.ecb_cut_paste import decrypt_profile, encrypt_profile, \
+    profile_for
 
 
 class TestECBCutPaste(unittest.TestCase):
