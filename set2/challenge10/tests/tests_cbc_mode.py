@@ -2,7 +2,8 @@ from Crypto.Cipher import AES
 import unittest
 import sys
 
-from set2.challenge10.cbc_mode import *
+from set1.challenge02.fixed_xor import xor
+from set2.challenge10.cbc_mode import CBCMode
 
 
 class TestCBCMode(unittest.TestCase):
