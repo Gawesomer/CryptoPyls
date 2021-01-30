@@ -12,7 +12,7 @@ def mt19937_oracle() -> Tuple[int, int]:
     Waits a random number of seconds again.
     Returns the first 32 bit output of the RNG and current time used as seed
     """
-    time.sleep(random.randint(40, 1000)) 
+    time.sleep(random.randint(40, 1000))
 
     curr_time = int(time.time())
     mt = MT19937()
