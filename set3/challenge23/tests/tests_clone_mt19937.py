@@ -1,8 +1,10 @@
 import unittest
 
+from set3.challenge21.mersenne_rng import MT19937
 from set3.challenge23.clone_mt19937 import \
     _untemper_right, \
     _untemper_left, \
+    untemper, \
     get_numbits, \
     keep_bitrange
 
@@ -55,6 +57,23 @@ class TestCloneMT19937(unittest.TestCase):
     def temper_left(self, bits: int, shift: int, mask: int) -> int:
         """ XOR `bits` against a left shifted value """
         return bits ^ ((bits << shift) & mask)
+
+    def temper_mt19937(self, bits) -> int:
+        """ tempering method from MT19937 """
+        b = 0x9D2C5680
+        c = 0xEFC60000
+        s = 7
+        t = 15
+        u = 11
+        d = 0xFFFFFFFF
+        l = 18
+
+        bits = bits ^ ((bits >> u) & d)
+        bits = bits ^ ((bits << s) & b)
+        bits = bits ^ ((bits << t) & c)
+        bits = bits ^ (bits >> l)
+
+        return bits
 
     def test_untemper_right_negative_shift_raises(self):
         with self.assertRaises(ValueError):
@@ -125,3 +144,23 @@ class TestCloneMT19937(unittest.TestCase):
         untempered = _untemper_left(tempered, shift, mask)
 
         self.assertEqual(bits, untempered)
+
+    def test_untemper_left_regression_case(self):
+        bits = 0x5A96E158
+        shift = 15
+        mask = 0xEFC60000
+        tempered = self.temper_left(bits, shift, mask)
+
+        untempered = _untemper_left(tempered, shift, mask)
+
+        self.assertEqual(bits, untempered)
+
+    def test_untemper_nominal_case(self):
+        mt = MT19937()
+        mt.seed_mt(123)
+
+        self.assertEqual(untemper(mt.extract_number()), mt.MT[0])
+        self.assertEqual(untemper(mt.extract_number()), mt.MT[1])
+        self.assertEqual(untemper(mt.extract_number()), mt.MT[2])
+        self.assertEqual(untemper(mt.extract_number()), mt.MT[3])
+        self.assertEqual(untemper(mt.extract_number()), mt.MT[4])

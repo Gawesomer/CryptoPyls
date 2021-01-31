@@ -76,7 +76,7 @@ def _untemper_left(bits: int, shift: int, mask: int) -> int:
         raise ValueError("shift must be positive")
 
     res = 0
-    numbits = get_numbits(bits)
+    numbits = max(get_numbits(bits), get_numbits(mask))
 
     prev_bits = keep_bitrange(bits, 1, shift)
     res += prev_bits
@@ -90,4 +90,30 @@ def _untemper_left(bits: int, shift: int, mask: int) -> int:
         prev_bits = curr_bits ^ xor_mask
         res += prev_bits
         index += 1
+    return res
+
+
+def untemper(tempered: int,
+        u: int = 11, d: int = 0xFFFFFFFF,
+        s: int = 7, b: int = 0x9D2C5680,
+        t: int = 15, c: int = 0xEFC60000,
+        l: int = 18) \
+                -> int:
+    """
+    params:
+        tempered: bits to untemper
+        u, d, s, b, t, c, l: parameters used for tempering
+                             (defaults set for MT19937)
+    returns:
+        x such that:
+            tempered = x ^ ((x >> u) & d)
+            tempered = tempered ^ ((tempered << s) & b)
+            tempered = tempered ^ ((tempered << t) & c)
+            tempered = tempered ^ (tempered >> l)
+    """
+    res = _untemper_right(tempered, l, (1 << get_numbits(tempered)) - 1)
+    res = _untemper_left(res, t, c)
+    res = _untemper_left(res, s, b)
+    res = _untemper_right(res, u, d)
+
     return res
