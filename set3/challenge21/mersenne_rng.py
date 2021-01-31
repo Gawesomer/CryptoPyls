@@ -29,16 +29,16 @@ class MersenneTwister:
         self.m = 397    # middle word
         self.r = 31     # separation point of one word
         # coefficients of the rational normal form twist matrix
-        self.a = int("0x9908B0DF", 16)
+        self.a = 0x9908B0DF
         # TGFSR(R) tempering bitmasks
-        self.b = int("0x9D2C5680", 16)
-        self.c = int("0xEFC60000", 16)
+        self.b = 0x9D2C5680
+        self.c = 0xEFC60000
         # TGFSR(R) tempering bit shifts
         self.s = 7
         self.t = 15
         # additional Mersenne Twister tempering bit shifts/masks
         self.u = 11
-        self.d = int("0xFFFFFFFF", 16)
+        self.d = 0xFFFFFFFF
         self.l = 18
         self.f = 1812433253     # generator constant
 
