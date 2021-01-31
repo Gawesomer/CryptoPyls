@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from set3.challenge21.mersenne_rng import MT19937
 
 
@@ -117,3 +119,21 @@ def untemper(tempered: int,
     res = _untemper_right(res, u, d)
 
     return res
+
+
+def clone_mt19937(mt: MT19937) -> MT19937:
+    """
+    params:
+        mt: seeded MT19937 generator
+    returns:
+        cloned MT19937 with state spliced from that of `mt`
+    side-effect:
+        `mt` will have been tapped 624 times
+    """
+    cloned = MT19937()
+
+    cloned.index = 0
+    for i in range(mt.n):
+        cloned.MT[i] = untemper(mt.extract_number())
+
+    return cloned

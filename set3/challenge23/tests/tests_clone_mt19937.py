@@ -5,6 +5,7 @@ from set3.challenge23.clone_mt19937 import \
     _untemper_right, \
     _untemper_left, \
     untemper, \
+    clone_mt19937, \
     get_numbits, \
     keep_bitrange
 
@@ -164,3 +165,15 @@ class TestCloneMT19937(unittest.TestCase):
         self.assertEqual(untemper(mt.extract_number()), mt.MT[2])
         self.assertEqual(untemper(mt.extract_number()), mt.MT[3])
         self.assertEqual(untemper(mt.extract_number()), mt.MT[4])
+
+    def test_clone_mt19937_nominal_case(self):
+        mt = MT19937()
+        mt.seed_mt(123)
+
+        cloned_mt = clone_mt19937(mt)
+
+        for i in range(mt.n):
+            cloned_mt.extract_number()
+
+        for i in range(5):
+            self.assertEqual(mt.extract_number(), cloned_mt.extract_number())
