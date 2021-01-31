@@ -38,7 +38,7 @@ def _untemper_right(bits: int, shift: int, mask: int) -> int:
         shift: amount of right shifting done by the tempering (positive)
         mask: mask applied by tempering
     returns:
-        x such that x = bits ^ ((bits >> shift) & mask)
+        x such that bits = x ^ ((x >> shift) & mask)
     """
     if shift < 0:
         raise ValueError("shift must be positive")
@@ -57,6 +57,36 @@ def _untemper_right(bits: int, shift: int, mask: int) -> int:
         curr_bits = keep_bitrange(bits, low, high)
         and_mask = keep_bitrange(mask, low, high)
         xor_mask = (prev_bits >> shift) & and_mask
+        prev_bits = curr_bits ^ xor_mask
+        res += prev_bits
+        index += 1
+    return res
+
+
+def _untemper_left(bits: int, shift: int, mask: int) -> int:
+    """
+    params:
+        bits: bits to untemper
+        shift: amount of left shifting done by the tempering (positive)
+        mask: mask applied by tempering
+    returns:
+        x such that bits = x ^ ((x << shift) & mask)
+    """
+    if shift < 0:
+        raise ValueError("shift must be positive")
+
+    res = 0
+    numbits = get_numbits(bits)
+
+    prev_bits = keep_bitrange(bits, 1, shift)
+    res += prev_bits
+    index = 1
+    while (shift*index)+1 <= numbits:
+        low = (shift*index)+1
+        high = (shift*(index+1))
+        curr_bits = keep_bitrange(bits, low, high)
+        and_mask = keep_bitrange(mask, low, high)
+        xor_mask = (prev_bits << shift) & and_mask
         prev_bits = curr_bits ^ xor_mask
         res += prev_bits
         index += 1

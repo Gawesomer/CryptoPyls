@@ -1,6 +1,9 @@
 import unittest
 
-from set3.challenge23.clone_mt19937 import _untemper_right, get_numbits, \
+from set3.challenge23.clone_mt19937 import \
+    _untemper_right, \
+    _untemper_left, \
+    get_numbits, \
     keep_bitrange
 
 
@@ -49,6 +52,10 @@ class TestCloneMT19937(unittest.TestCase):
         """ XOR `bits` against a right shifted value """
         return bits ^ ((bits >> shift) & mask)
 
+    def temper_left(self, bits: int, shift: int, mask: int) -> int:
+        """ XOR `bits` against a left shifted value """
+        return bits ^ ((bits << shift) & mask)
+
     def test_untemper_right_negative_shift_raises(self):
         with self.assertRaises(ValueError):
             _untemper_right(12, -1, 7)
@@ -94,3 +101,27 @@ class TestCloneMT19937(unittest.TestCase):
         )
 
         self.assertEqual(expected, untempered)
+
+    def test_untemper_left_negative_shift_raise(self):
+        with self.assertRaises(ValueError):
+            _untemper_left(12, -1, 7)
+
+    def test_untemper_left_smaller_than_bitshift(self):
+        bits = 12
+        shift = 4
+        mask = 7
+        tempered = self.temper_left(bits, shift, mask)
+
+        untempered = _untemper_left(tempered, shift, mask)
+
+        self.assertEqual(bits, untempered)
+
+    def test_untemper_left_last_shift_results_in_smaller_block(self):
+        bits = 0x1D
+        shift = 2
+        mask = 0x4
+        tempered = self.temper_left(bits, shift, mask)
+
+        untempered = _untemper_left(tempered, shift, mask)
+
+        self.assertEqual(bits, untempered)
