@@ -96,10 +96,10 @@ def _untemper_left(bits: int, shift: int, mask: int) -> int:
 
 
 def untemper(tempered: int,
-        u: int = 11, d: int = 0xFFFFFFFF,
-        s: int = 7, b: int = 0x9D2C5680,
-        t: int = 15, c: int = 0xEFC60000,
-        l: int = 18) \
+             u: int = 11, d: int = 0xFFFFFFFF,
+             s: int = 7, b: int = 0x9D2C5680,
+             t: int = 15, c: int = 0xEFC60000,
+             l: int = 18) \
                 -> int:
     """
     params:
