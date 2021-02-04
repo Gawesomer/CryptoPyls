@@ -4,6 +4,7 @@ import os
 import pathlib
 from typing import Callable
 
+from set1.challenge02.fixed_xor import xor
 from set1.challenge07.ecb_mode import ECBMode
 from set2.challenge11.rand_enc import rand_bytes_gen
 from set3.challenge18.ctr_mode import CTRMode
@@ -45,10 +46,27 @@ def gen_edit_oracle(key: bytes, nonce: bytes) \
     return edit_oracle
 
 
+def break_rand_access_ctr(
+        ciphertext: bytes,
+        edit_oracle: Callable[[bytes, int, bytes], bytes]) \
+        -> bytes:
+    """
+    params:
+        ciphertext: encrypted using AES-128
+        edit_oracle: `edit_oracle()` from `gen_edit_oracle()`
+    returns:
+        plaintext
+    """
+    key_cipher = bytes(len(ciphertext))
+    key_cipher = edit_oracle(ciphertext, 0, key_cipher)[:len(key_cipher)]
+    return xor(ciphertext, key_cipher)
+
+
 def main():
     """
     decrypt contents of a file encrypted using AES-128 in ECB Mode
     encrypt decrypted plaintext using AES-128 in CTR Mode
+    break CTR Mode encryption using `edit_oracle()`
     """
     key = b"YELLOW SUBMARINE"
     cipher = AES.new(key, AES.MODE_ECB)
@@ -74,7 +92,10 @@ def main():
     )
 
     encrypted = ctr.encrypt(plaintext)
-    print(encrypted)
+
+    edit_oracle = gen_edit_oracle(unknown_key, nonce)
+
+    print(break_rand_access_ctr(encrypted, edit_oracle).decode())
 
 
 if __name__ == "__main__":

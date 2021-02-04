@@ -2,7 +2,8 @@ from Crypto.Cipher import AES
 import unittest
 
 from set3.challenge18.ctr_mode import CTRMode
-from set4.challenge25.rand_access_ctr import gen_edit_oracle
+from set4.challenge25.rand_access_ctr import break_rand_access_ctr, \
+    gen_edit_oracle
 
 
 class TestRandAccessCTR(unittest.TestCase):
@@ -20,13 +21,13 @@ class TestRandAccessCTR(unittest.TestCase):
             nonce=self.nonce,
         )
         self.ciphertext = self.ctr.encrypt(self.plaintext)
+        self.edit_oracle = gen_edit_oracle(self.key, self.nonce)
 
     def test_edit_oracle_zero_offset_prepends(self):
         newtext = b"What?"
         expected_plaintext = newtext + self.plaintext
 
-        edit_oracle = gen_edit_oracle(self.key, self.nonce)
-        new_ciphertext = edit_oracle(self.ciphertext, 0, newtext)
+        new_ciphertext = self.edit_oracle(self.ciphertext, 0, newtext)
         decrypted = self.ctr.decrypt(new_ciphertext)
 
         self.assertEqual(expected_plaintext, decrypted)
@@ -35,8 +36,7 @@ class TestRandAccessCTR(unittest.TestCase):
         newtext = b"What?"
         expected_plaintext = b"Hello WorWhat?ld!"
 
-        edit_oracle = gen_edit_oracle(self.key, self.nonce)
-        new_ciphertext = edit_oracle(self.ciphertext, -3, newtext)
+        new_ciphertext = self.edit_oracle(self.ciphertext, -3, newtext)
         decrypted = self.ctr.decrypt(new_ciphertext)
 
         self.assertEqual(expected_plaintext, decrypted)
@@ -45,8 +45,7 @@ class TestRandAccessCTR(unittest.TestCase):
         newtext = b"What?"
         expected_plaintext = self.plaintext + newtext
 
-        edit_oracle = gen_edit_oracle(self.key, self.nonce)
-        new_ciphertext = edit_oracle(self.ciphertext, 100, newtext)
+        new_ciphertext = self.edit_oracle(self.ciphertext, 100, newtext)
         decrypted = self.ctr.decrypt(new_ciphertext)
 
         self.assertEqual(expected_plaintext, decrypted)
@@ -55,8 +54,12 @@ class TestRandAccessCTR(unittest.TestCase):
         newtext = b"What?"
         expected_plaintext = b"HellWhat?o World!"
 
-        edit_oracle = gen_edit_oracle(self.key, self.nonce)
-        new_ciphertext = edit_oracle(self.ciphertext, 4, newtext)
+        new_ciphertext = self.edit_oracle(self.ciphertext, 4, newtext)
         decrypted = self.ctr.decrypt(new_ciphertext)
 
         self.assertEqual(expected_plaintext, decrypted)
+
+    def test_break_rand_access_ctr_nominal_case(self):
+        decrypted = break_rand_access_ctr(self.ciphertext, self.edit_oracle)
+
+        self.assertEqual(self.plaintext, decrypted)
