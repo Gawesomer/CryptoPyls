@@ -1,109 +1,109 @@
 import unittest
 
-from set2.challenge09.pkcs7_padding import pkcs7_pad, pkcs7_unpad, \
+from set2.challenge09.pkcs7_padding import PKCS7Padding, \
     InvalidPaddingException
 
 
 class TestPKCS7Padding(unittest.TestCase):
 
-    def test_pkcs7_pad_none_bytes_raises_typeerror(self):
+    def test_apply_none_bytes_raises_typeerror(self):
         with self.assertRaises(TypeError):
-            pkcs7_pad(None, 1)
+            PKCS7Padding.apply(None, 1)
 
-    def test_pkcs7_pad_empty_bytes_adds_padding(self):
+    def test_apply_empty_bytes_adds_padding(self):
         b = b''
         expected_padded = b"\x04\x04\x04\x04"
 
-        actual_padded = pkcs7_pad(b, 4)
+        actual_padded = PKCS7Padding.apply(b, 4)
 
         self.assertEqual(expected_padded, actual_padded)
 
-    def test_pkcs7_pad_zero_blksize_raises(self):
+    def test_apply_zero_blksize_raises(self):
         b = b'YELLOW SUBMARINE'
 
         with self.assertRaises(InvalidPaddingException):
-            pkcs7_pad(b, 0)
+            PKCS7Padding.apply(b, 0)
 
-    def test_pkcs7_pad_negative_blksize_raises(self):
+    def test_apply_negative_blksize_raises(self):
         b = b'YELLOW SUBMARINE'
 
         with self.assertRaises(InvalidPaddingException):
-            pkcs7_pad(b, -1)
+            PKCS7Padding.apply(b, -1)
 
-    def test_pkcs7_pad_blksize_over_bounds_raises(self):
+    def test_apply_blksize_over_bounds_raises(self):
         b = b'YELLOW SUBMARINE'
 
         with self.assertRaises(InvalidPaddingException):
-            pkcs7_pad(b, 256)
+            PKCS7Padding.apply(b, 256)
 
-    def test_pkcs7_pad_cryptopals_case(self):
+    def test_apply_cryptopals_case(self):
         b = b"YELLOW SUBMARINE"
         expected_padded = b"YELLOW SUBMARINE\x04\x04\x04\x04"
 
-        actual_padded = pkcs7_pad(b, 20)
+        actual_padded = PKCS7Padding.apply(b, 20)
 
         self.assertEqual(expected_padded, actual_padded)
 
-    def test_pkcs7_pad_bytes_size_mutliple_of_blksize_adds_extra_block(self):
+    def test_apply_bytes_size_mutliple_of_blksize_adds_extra_block(self):
         b = b"YELLOW"
         expected_padded = b"YELLOW\x03\x03\x03"
 
-        actual_padded = pkcs7_pad(b, 3)
+        actual_padded = PKCS7Padding.apply(b, 3)
 
         self.assertEqual(expected_padded, actual_padded)
 
-    def test_pkcs7_unpad_empty_bytes_returns_empty(self):
+    def test_unapply_empty_bytes_returns_empty(self):
         padded = b""
         expected_bytes = b""
 
-        actual_bytes = pkcs7_unpad(padded)
+        actual_bytes = PKCS7Padding.unapply(padded)
 
         self.assertEqual(expected_bytes, actual_bytes)
 
-    def test_pkcs7_unpad_all_padding_returns_empty(self):
+    def test_unapply_all_padding_returns_empty(self):
         padded = b"\x04\x04\x04\x04"
         expected_bytes = b""
 
-        actual_bytes = pkcs7_unpad(padded)
+        actual_bytes = PKCS7Padding.unapply(padded)
 
         self.assertEqual(expected_bytes, actual_bytes)
 
-    def test_pkcs7_unpad_cryptopals_case(self):
+    def test_unapply_cryptopals_case(self):
         padded = b"YELLOW SUBMARINE\x04\x04\x04\x04"
         expected_bytes = b"YELLOW SUBMARINE"
 
-        actual_bytes = pkcs7_unpad(padded)
+        actual_bytes = PKCS7Padding.unapply(padded)
 
         self.assertEqual(expected_bytes, actual_bytes)
 
-    def test_pkcs7_unpad_whole_block_padding(self):
+    def test_unapply_whole_block_padding(self):
         padded = b"YELLOW\x03\x03\x03"
         expected_bytes = b"YELLOW"
 
-        actual_bytes = pkcs7_unpad(padded)
+        actual_bytes = PKCS7Padding.unapply(padded)
 
         self.assertEqual(expected_bytes, actual_bytes)
 
-    def test_pkcs7_unpad_padding_value_larger_than_valid_raises(self):
+    def test_unapply_padding_value_larger_than_valid_raises(self):
         padded = b"YELLOW\x16\x16\x16"
 
         with self.assertRaises(InvalidPaddingException):
-            pkcs7_unpad(padded)
+            PKCS7Padding.unapply(padded)
 
-    def test_pkcs7_unpad_padding_value_incosistent(self):
+    def test_unapply_padding_value_incosistent(self):
         padded = b"ICE ICE BABY\x01\x02\x03\x04"
 
         with self.assertRaises(InvalidPaddingException):
-            pkcs7_unpad(padded)
+            PKCS7Padding.unapply(padded)
 
-    def test_pkcs7_unpad_padding_value_does_not_match_number_of_pads(self):
+    def test_unapply_padding_value_does_not_match_number_of_pads(self):
         padded = b"ICE ICE BABY\x05\x05\x05\x05"
 
         with self.assertRaises(InvalidPaddingException):
-            pkcs7_unpad(padded)
+            PKCS7Padding.unapply(padded)
 
-    def test_pkcs7_unpad_padding_ending_with_zero_raises(self):
+    def test_unapply_padding_ending_with_zero_raises(self):
         padded = b"YELLOW\x00"
 
         with self.assertRaises(InvalidPaddingException):
-            pkcs7_unpad(padded)
+            PKCS7Padding.unapply(padded)

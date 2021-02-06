@@ -6,7 +6,7 @@ from typing import Callable, Tuple
 
 from set1.challenge02.fixed_xor import xor
 from set1.challenge07.ecb_mode import blocks
-from set2.challenge09.pkcs7_padding import pkcs7_pad, pkcs7_unpad, \
+from set2.challenge09.pkcs7_padding import PKCS7Padding, \
     InvalidPaddingException
 from set2.challenge10.cbc_mode import CBCMode
 from set2.challenge11.rand_enc import rand_bytes_gen
@@ -41,7 +41,7 @@ def encryption_oracle() -> Tuple[bytes, bytes]:
     blksize = len(CONSISTENT_KEY)
 
     plain = base64.b64decode(plain_strs[random.randint(0, len(plain_strs)-1)])
-    padded = pkcs7_pad(plain, blksize)
+    padded = PKCS7Padding.apply(plain, blksize)
 
     cipher = AES.new(CONSISTENT_KEY, AES.MODE_ECB)
     iv = rand_bytes_gen(blksize)
@@ -78,7 +78,7 @@ def valid_padding(encrypted: bytes, iv: bytes) -> bool:
     decrypted = cbc.decrypt(encrypted)
 
     try:
-        pkcs7_unpad(decrypted)
+        PKCS7Padding.unapply(decrypted)
         return True
     except InvalidPaddingException:
         return False
@@ -145,7 +145,7 @@ def break_cbc(encrypted: bytes, iv: bytes, padding_oracle: Callable[[bytes, byte
         decrypted += break_cbc_single_blk(prev_blk, curr_blk, padding_oracle)
         prev_blk = curr_blk
 
-    return pkcs7_unpad(decrypted)
+    return PKCS7Padding.unapply(decrypted)
 
 
 def main():

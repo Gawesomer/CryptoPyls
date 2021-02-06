@@ -3,7 +3,7 @@ from typing import Callable
 
 from set1.challenge02.fixed_xor import xor
 from set1.challenge07.ecb_mode import blocks, get_block_n
-from set2.challenge09.pkcs7_padding import pkcs7_pad, pkcs7_unpad
+from set2.challenge09.pkcs7_padding import PKCS7Padding
 from set2.challenge10.cbc_mode import CBCMode
 
 
@@ -24,7 +24,7 @@ def gen_encryption_method(key: bytes, blksize: int = 16) \
             `b` encrypted using AES-128-CBC
             uses key as IV
         """
-        padded = pkcs7_pad(plaintext, blksize)
+        padded = PKCS7Padding.apply(plaintext, blksize)
         cipher = AES.new(key, AES.MODE_ECB)
         cbc = CBCMode(
             blksize=blksize,
@@ -63,7 +63,7 @@ def gen_ascii_oracle(key: bytes, blksize: int = 16) \
             iv=key
         )
         padded = cbc.decrypt(encrypted)
-        decrypted = pkcs7_unpad(padded)
+        decrypted = PKCS7Padding.unapply(padded)
 
         for c in decrypted:
             if c >= 128:

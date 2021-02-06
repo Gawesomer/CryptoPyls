@@ -3,7 +3,7 @@ from typing import Callable
 
 from set1.challenge02.fixed_xor import xor
 from set1.challenge07.ecb_mode import blocks
-from set2.challenge09.pkcs7_padding import pkcs7_pad, pkcs7_unpad
+from set2.challenge09.pkcs7_padding import PKCS7Padding
 from set2.challenge10.cbc_mode import CBCMode
 from set2.challenge11.rand_enc import rand_bytes_gen
 
@@ -38,7 +38,7 @@ def gen_encryption_oracle(blksize: int = 16, prefix: bytes = None, suffix: bytes
         """
         cleaned_data = b.replace(b';', b"';'").replace(b'=', b"'='")
 
-        plain = pkcs7_pad(prefix+cleaned_data+suffix, blksize)
+        plain = PKCS7Padding.apply(prefix+cleaned_data+suffix, blksize)
         cipher = AES.new(CONSISTENT_KEY, AES.MODE_ECB)
         cbc = CBCMode(
             blksize=blksize,
@@ -68,7 +68,7 @@ def is_admin(encrypted: bytes, blksize: int = 16) -> bool:
         iv=CONSISTENT_IV
     )
     padded = cbc.decrypt(encrypted)
-    decrypted = pkcs7_unpad(padded)
+    decrypted = PKCS7Padding.unapply(padded)
 
     return b";admin=true;" in decrypted
 
