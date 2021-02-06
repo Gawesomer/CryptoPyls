@@ -1,5 +1,4 @@
 from __future__ import annotations
-import struct
 
 from set2.challenge09.pkcs7_padding import InvalidPaddingException
 
@@ -26,7 +25,6 @@ class MDPadding:
         padded += b'\x00' * ((56 - ((numbytes+1) % 64)) % 64)  # Add '0' bits
         padded += (numbits % (2 ** 64)).to_bytes(8, "big")    # Add length
         return padded
-
 
     @classmethod
     def unapply(cls: MDPadding, padded: bytes) -> bytes:
