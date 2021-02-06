@@ -5,7 +5,7 @@ import sys
 from typing import Callable
 
 from set1.challenge07.ecb_mode import ECBMode, blocks
-from set2.challenge09.pkcs7_padding import pkcs7_pad
+from set2.challenge09.pkcs7_padding import PKCS7Padding
 from set2.challenge10.cbc_mode import CBCMode
 
 
@@ -55,7 +55,7 @@ def gen_encryption_oracle(blksize: int = 16, use_ecb: bool = None) \
         suffix_size = random.randint(5, 10)
         suffix = rand_bytes_gen(suffix_size)
 
-        plain = pkcs7_pad(prefix+b+suffix, blksize)
+        plain = PKCS7Padding.apply(prefix+b+suffix, blksize)
         key = rand_bytes_gen(blksize)
         cipher = AES.new(key, AES.MODE_ECB)
 
