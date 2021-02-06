@@ -31,7 +31,6 @@ class PKCS7Padding:
             message += num_pads.to_bytes(1, byteorder=sys.byteorder)
         return message
 
-
     @classmethod
     def unapply(cls: PKCS7Padding, padded: bytes) -> bytes:
         """
