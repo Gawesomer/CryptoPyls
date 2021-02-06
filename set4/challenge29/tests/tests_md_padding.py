@@ -25,8 +25,18 @@ class TestMDPadding(unittest.TestCase):
 
     def test_apply_messagesize_56_mod_64_append_whole_block_of_padding(self):
         plaintext = b"Hello this string is fifty six bytes here are some more."
-        expected_padded = plaintext + b'\x80' + bytes(55) + \
+        expected_padded = plaintext + b'\x80' + bytes(63) + \
             b"\x00\x00\x00\x00\x00\x00\x01\xc0"
+
+        actual_padded = MDPadding.apply(plaintext)
+
+        self.assertEqual(expected_padded, actual_padded)
+
+    def test_apply_multiple_blocks(self):
+        plaintext = bytes(128) + \
+            b"This message is exactly fourty seven bytes long"
+        expected_padded = plaintext + b'\x80' + bytes(8) + \
+            b"\x00\x00\x00\x00\x00\x00\x05x"
 
         actual_padded = MDPadding.apply(plaintext)
 

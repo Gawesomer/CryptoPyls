@@ -19,7 +19,7 @@ class MDPadding:
         numbytes = len(message)
         numbits = numbytes * 8
         padded = message + b'\x80'  # Add '1' bit
-        padded += b'\x00' * (56 - (numbytes % 56) - 1)  # Add '0' bits
+        padded += b'\x00' * ((56 - ((numbytes+1) % 64)) % 64)  # Add '0' bits
         padded += (numbits % (2 ** 64)).to_bytes(8, "big")    # Add length
         return padded
 
