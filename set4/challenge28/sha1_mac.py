@@ -1,4 +1,4 @@
-from Crypto.Hash import SHA1
+from set4.challenge28.sha1 import SHA1
 
 
 def authenticate_message(plaintext: bytes, key: bytes) -> bytes:
@@ -8,7 +8,7 @@ def authenticate_message(plaintext: bytes, key: bytes) -> bytes:
     returns:
         `SHA1(key || plaintext) || plaintext`
     """
-    h = SHA1.new()
+    h = SHA1()
     h.update(key + plaintext)
     mac = h.digest()
     return mac + plaintext
