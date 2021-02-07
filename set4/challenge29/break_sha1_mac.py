@@ -22,7 +22,7 @@ def length_extension(
                              with a valid MAC, False otherwise
         max_keysize: max keysize to try (>= 0)
     returns:
-        valid autheniticated message (i.e. passes `is_valid_message()`)
+        valid authenticated message (i.e. passes `is_valid_message()`)
         with `newtext` appended to it
     """
     mac = message[:20]
@@ -33,9 +33,12 @@ def length_extension(
     )
     hasher = SHA1()
 
-    for i in range(max_keysize):
-        glue_padding = MDPadding.apply(bytes(i)+oldtext)[i+len(oldtext):]
-        hasher._message_byte_length = i + len(oldtext) + len(glue_padding)
+    for keysize in range(max_keysize):
+        glue_padding = MDPadding.apply(
+            bytes(keysize)+oldtext
+            )[keysize+len(oldtext):]
+        hasher._message_byte_length = keysize + len(oldtext) + \
+            len(glue_padding)
         hasher._h = start_state
         hasher._unprocessed = b''
 
