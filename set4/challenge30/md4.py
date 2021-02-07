@@ -29,7 +29,6 @@ from set4.challenge28.sha1 import _left_rotate
 class MD4():
 
     A, B, C, D = (0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476)
-    buf = [0x00] * 64
 
     def __init__(self, message):
         length = struct.pack('<Q', len(message) * 8)
