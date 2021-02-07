@@ -4,7 +4,7 @@ from set4.challenge28.sha1_mac import authenticate_message, is_valid_message
 from set4.challenge29.break_sha1_mac import length_extension
 
 
-class TestMDPadding(unittest.TestCase):
+class TestBreakSHA1MAC(unittest.TestCase):
 
     def test_length_extension_nominal_case(self):
         key = b"I'm gettin' rid of Britta"
