@@ -31,10 +31,6 @@ class MD4():
     A, B, C, D = (0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476)
     buf = [0x00] * 64
 
-    _F = lambda self, x, y, z: ((x & y) | (~x & z))
-    _G = lambda self, x, y, z: ((x & y) | (x & z) | (y & z))
-    _H = lambda self, x, y, z: (x ^ y ^ z)
-
     def __init__(self, message):
         length = struct.pack('<Q', len(message) * 8)
         while len(message) > 64:
@@ -46,6 +42,15 @@ class MD4():
         while len(message):
             self._handle(message[:64])
             message = message[64:]
+
+    def _F(self, x, y, z):
+        return ((x & y) | (~x & z))
+
+    def _G(self, x, y, z):
+        return ((x & y) | (x & z) | (y & z))
+
+    def _H(self, x, y, z):
+        return (x ^ y ^ z)
 
     def _handle(self, chunk):
         X = list(struct.unpack('<' + 'I' * 16, chunk))
