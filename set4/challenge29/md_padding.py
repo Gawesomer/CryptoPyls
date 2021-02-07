@@ -11,10 +11,12 @@ class MDPadding:
     """
 
     @classmethod
-    def apply(cls: MDPadding, message: bytes) -> bytes:
+    def apply(cls: MDPadding, message: bytes, byteorder: str = "big") \
+            -> bytes:
         """
         params:
             message: bytes to be padded
+            byteorder: "big" or "little"
         returns:
             padded message
         """
@@ -22,18 +24,20 @@ class MDPadding:
         numbits = numbytes * 8
         padded = message + b'\x80'  # Add '1' bit
         padded += b'\x00' * ((56 - ((numbytes+1) % 64)) % 64)  # Add '0' bits
-        padded += (numbits % (2 ** 64)).to_bytes(8, "big")    # Add length
+        padded += (numbits % (2 ** 64)).to_bytes(8, byteorder)    # Add length
         return padded
 
     @classmethod
-    def unapply(cls: MDPadding, padded: bytes) -> bytes:
+    def unapply(cls: MDPadding, padded: bytes, byteorder: str = "big") \
+            -> bytes:
         """
         params:
             padded: padded message
+            byteorder: "big" or "little"
         returns:
             message with padding removed
         """
-        numbits = int.from_bytes(padded[-8:], "big")
+        numbits = int.from_bytes(padded[-8:], byteorder)
         without_len = padded[:-8]
         i = -1
         while without_len[i] == 0:
