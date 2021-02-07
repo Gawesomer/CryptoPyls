@@ -8,7 +8,6 @@ class MDPadding:
     Message Digest padding as specified in RFC 1321
     Notes:
         - This is not a general implementation, it only operates on whole bytes
-        - Uses big-endian instead of little-endian as specified in RFC specs
     """
 
     @classmethod
