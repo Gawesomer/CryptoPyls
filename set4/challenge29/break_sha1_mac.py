@@ -18,6 +18,9 @@ def length_extension(
     params:
         message: authenticated using SHA-1 keyed MAC
         newtext: text to append to message
+        validate_mac_oracle: oracle that returns True if input is authenticated
+                             with a valid MAC, False otherwise
+        max_keysize: max keysize to try (>= 0)
     returns:
         valid autheniticated message (i.e. passes `is_valid_message()`)
         with `newtext` appended to it
