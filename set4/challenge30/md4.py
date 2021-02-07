@@ -23,7 +23,7 @@
 import struct
 import binascii
 
-lrot = lambda x, n: (x << n) | (x >> (32 - n))
+from set4.challenge28.sha1 import _left_rotate
 
 
 class MD4():
@@ -54,36 +54,36 @@ class MD4():
         for i in range(16):
             k = i
             if i % 4 == 0:
-                A = lrot((A + self._F(B, C, D) + X[k]) & 0xffffffff, 3)
+                A = _left_rotate((A + self._F(B, C, D) + X[k]), 3)
             elif i % 4 == 1:
-                D = lrot((D + self._F(A, B, C) + X[k]) & 0xffffffff, 7)
+                D = _left_rotate((D + self._F(A, B, C) + X[k]), 7)
             elif i % 4 == 2:
-                C = lrot((C + self._F(D, A, B) + X[k]) & 0xffffffff, 11)
+                C = _left_rotate((C + self._F(D, A, B) + X[k]), 11)
             elif i % 4 == 3:
-                B = lrot((B + self._F(C, D, A) + X[k]) & 0xffffffff, 19)
+                B = _left_rotate((B + self._F(C, D, A) + X[k]), 19)
 
         for i in range(16):
             k = (i // 4) + (i % 4) * 4
             if i % 4 == 0:
-                A = lrot((A + self._G(B, C, D) + X[k] + 0x5a827999) & 0xffffffff, 3)
+                A = _left_rotate((A + self._G(B, C, D) + X[k] + 0x5a827999), 3)
             elif i % 4 == 1:
-                D = lrot((D + self._G(A, B, C) + X[k] + 0x5a827999) & 0xffffffff, 5)
+                D = _left_rotate((D + self._G(A, B, C) + X[k] + 0x5a827999), 5)
             elif i % 4 == 2:
-                C = lrot((C + self._G(D, A, B) + X[k] + 0x5a827999) & 0xffffffff, 9)
+                C = _left_rotate((C + self._G(D, A, B) + X[k] + 0x5a827999), 9)
             elif i % 4 == 3:
-                B = lrot((B + self._G(C, D, A) + X[k] + 0x5a827999) & 0xffffffff, 13)
+                B = _left_rotate((B + self._G(C, D, A) + X[k] + 0x5a827999), 13)
 
         order = [0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15]
         for i in range(16):
             k = order[i]
             if i % 4 == 0:
-                A = lrot((A + self._H(B, C, D) + X[k] + 0x6ed9eba1) & 0xffffffff, 3)
+                A = _left_rotate((A + self._H(B, C, D) + X[k] + 0x6ed9eba1), 3)
             elif i % 4 == 1:
-                D = lrot((D + self._H(A, B, C) + X[k] + 0x6ed9eba1) & 0xffffffff, 9)
+                D = _left_rotate((D + self._H(A, B, C) + X[k] + 0x6ed9eba1), 9)
             elif i % 4 == 2:
-                C = lrot((C + self._H(D, A, B) + X[k] + 0x6ed9eba1) & 0xffffffff, 11)
+                C = _left_rotate((C + self._H(D, A, B) + X[k] + 0x6ed9eba1), 11)
             elif i % 4 == 3:
-                B = lrot((B + self._H(C, D, A) + X[k] + 0x6ed9eba1) & 0xffffffff, 15)
+                B = _left_rotate((B + self._H(C, D, A) + X[k] + 0x6ed9eba1), 15)
 
         self.A = (self.A + A) & 0xffffffff
         self.B = (self.B + B) & 0xffffffff
