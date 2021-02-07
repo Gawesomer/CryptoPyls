@@ -39,13 +39,14 @@ class MD4():
         self._message_byte_length = 0
 
     def update(self, message):
-        message_bit_length = (self._message_byte_length + len(message)) * 8
+        message_byte_length = self._message_byte_length + len(message)
+        message_bit_length = message_byte_length * 8
         length = struct.pack('<Q', message_bit_length)
         while len(message) > 64:
             self._handle(message[:64])
             message = message[64:]
         message += b'\x80'
-        message += bytes((56 - len(message) % 64) % 64)
+        message += bytes((56 - (message_byte_length+1) % 64) % 64)
         message += length
         while len(message):
             self._handle(message[:64])
