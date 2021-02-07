@@ -9,7 +9,8 @@ class TestMD4(unittest.TestCase):
         payload = b"The quick brown fox jumps over the lazy dog"
         expected = b"\x1b\xeei\xa4k\xa8\x11\x18\\\x19Gb\xab\xae\xae\x90"
 
-        h = MD4(payload)
+        h = MD4()
+        h.update(payload)
         res = h.digest()
 
         self.assertEqual(expected, res)

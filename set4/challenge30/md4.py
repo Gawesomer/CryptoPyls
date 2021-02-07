@@ -28,10 +28,19 @@ from set4.challenge28.sha1 import _left_rotate
 
 class MD4():
 
-    A, B, C, D = (0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476)
+    def __init__(self):
+        self.A, self.B, self.C, self.D = (
+            0x67452301,
+            0xefcdab89,
+            0x98badcfe,
+            0x10325476
+        )
+        # Length in bytes of all data that has been processed so far
+        self._message_byte_length = 0
 
-    def __init__(self, message):
-        length = struct.pack('<Q', len(message) * 8)
+    def update(self, message):
+        message_bit_length = (self._message_byte_length + len(message)) * 8
+        length = struct.pack('<Q', message_bit_length)
         while len(message) > 64:
             self._handle(message[:64])
             message = message[64:]

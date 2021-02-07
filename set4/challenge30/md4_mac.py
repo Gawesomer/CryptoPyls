@@ -8,7 +8,8 @@ def authenticate_message(plaintext: bytes, key: bytes) -> bytes:
     returns:
         `MD4(key || plaintext) || plaintext`
     """
-    h = MD4(key + plaintext)
+    h = MD4()
+    h.update(key + plaintext)
     mac = h.digest()
     return mac + plaintext
 
