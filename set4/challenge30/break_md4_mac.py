@@ -3,9 +3,9 @@ from typing import Callable
 
 from set1.challenge07.ecb_mode import blocks
 from set2.challenge11.rand_enc import rand_bytes_gen
-from set4.challenge28.sha1 import SHA1
-from set4.challenge28.sha1_mac import authenticate_message, is_valid_message
 from set4.challenge29.md_padding import MDPadding
+from set4.challenge30.md4_mac import authenticate_message, is_valid_message
+from set4.challenge30.md4 import MD4
 
 
 def length_extension(
@@ -16,7 +16,7 @@ def length_extension(
         -> bytes:
     """
     params:
-        message: authenticated using SHA-1 keyed MAC
+        message: authenticated using MD4 keyed MAC
         newtext: text to append to message
         validate_mac_oracle: oracle that returns True if input is authenticated
                              with a valid MAC, False otherwise
@@ -25,22 +25,21 @@ def length_extension(
         valid authenticated message (i.e. passes `is_valid_message()`)
         with `newtext` appended to it
     """
-    mac = message[:20]
-    oldtext = message[20:]
+    mac = message[:16]
+    oldtext = message[16:]
 
     start_state = tuple(
-        int.from_bytes(block, "big") for block in blocks(mac, 4)
+        int.from_bytes(block, "little") for block in blocks(mac, 4)
     )
-    hasher = SHA1()
 
     for keysize in range(max_keysize):
         glue_padding = MDPadding.apply(
-            bytes(keysize)+oldtext
+            bytes(keysize)+oldtext, "little"
             )[keysize+len(oldtext):]
+        hasher = MD4()
         hasher._message_byte_length = keysize + len(oldtext) + \
             len(glue_padding)
-        hasher._h = start_state
-        hasher._unprocessed = b''
+        hasher.A, hasher.B, hasher.C, hasher.D = start_state
 
         hasher.update(newtext)
         new_mac = hasher.digest()

@@ -1,10 +1,10 @@
 import unittest
 
-from set4.challenge28.sha1_mac import authenticate_message, is_valid_message
-from set4.challenge29.break_sha1_mac import length_extension
+from set4.challenge30.md4_mac import authenticate_message, is_valid_message
+from set4.challenge30.break_md4_mac import length_extension
 
 
-class TestBreakSHA1MAC(unittest.TestCase):
+class TestBreakMD4MAC(unittest.TestCase):
 
     def test_length_extension_nominal_case(self):
         key = b"I'm gettin' rid of Britta"
