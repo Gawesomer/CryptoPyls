@@ -3,8 +3,8 @@ from typing import Callable
 
 from set1.challenge07.ecb_mode import blocks
 from set2.challenge11.rand_enc import rand_bytes_gen
+from set4.challenge28.mac import MAC
 from set4.challenge28.sha1 import SHA1
-from set4.challenge28.sha1_mac import authenticate_message, is_valid_message
 from set4.challenge29.md_padding import MDPadding
 
 
@@ -22,11 +22,11 @@ def length_extension(
                              with a valid MAC, False otherwise
         max_keysize: max keysize to try (>= 0)
     returns:
-        valid authenticated message (i.e. passes `is_valid_message()`)
+        valid authenticated message (i.e. passes `MAC.validate()`)
         with `newtext` appended to it
     """
-    mac = message[:20]
-    oldtext = message[20:]
+    mac = message[:SHA1.digest_size]
+    oldtext = message[SHA1.digest_size:]
 
     start_state = tuple(
         int.from_bytes(block, "big") for block in blocks(mac, 4)
@@ -57,10 +57,10 @@ def main():
     cookie = (b"comment1=cooking%20MCs;userdata=foo;comment2=%20like%20a%20"
               b"pound%20of%20bacon")
     key = rand_bytes_gen(random.randint(0, 128))
-    authenticated_cookie = authenticate_message(cookie, key)
+    authenticated_cookie = MAC.generate(cookie, key, SHA1)
 
     def validation_oracle(msg):
-        return is_valid_message(msg, key)
+        return MAC.validate(msg, key, SHA1)
 
     payload = b";admin=true"
     attack_cookie = length_extension(
@@ -69,7 +69,7 @@ def main():
         validation_oracle
     )
 
-    assert is_valid_message(attack_cookie, key)
+    assert MAC.validate(attack_cookie, key, SHA1)
     print(attack_cookie)
 
 

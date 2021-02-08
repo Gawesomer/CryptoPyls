@@ -26,6 +26,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 import struct
 import io
 
+from set4.challenge28.hash import Hash
+
 
 def _left_rotate(n, b):
     """Left rotate a 32-bit integer n by b bits."""
@@ -82,7 +84,7 @@ def _process_chunk(chunk, h0, h1, h2, h3, h4):
     return h0, h1, h2, h3, h4
 
 
-class SHA1:
+class SHA1(Hash):
     """A class that mimics that hashlib api and implements the SHA-1 algorithm."""
 
     name = 'python-sha1'
