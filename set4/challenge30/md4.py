@@ -23,10 +23,14 @@
 import struct
 import binascii
 
+from set4.challenge28.hash import Hash
 from set4.challenge28.sha1 import _left_rotate
 
 
-class MD4():
+class MD4(Hash):
+
+    digest_size = 16
+    block_size = 64
 
     def __init__(self):
         self.A, self.B, self.C, self.D = (
