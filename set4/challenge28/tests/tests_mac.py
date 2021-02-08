@@ -4,7 +4,7 @@ from set4.challenge28.mac import MAC
 from set4.challenge28.sha1 import SHA1
 
 
-class TestSHA1MAC(unittest.TestCase):
+class TestMAC(unittest.TestCase):
 
     def test_generate_validate_integration(self):
         plaintext = b"You turn yourself around. That's what it's all about."
