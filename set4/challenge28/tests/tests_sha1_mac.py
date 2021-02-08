@@ -1,24 +1,25 @@
 import unittest
 
-from set4.challenge28.sha1_mac import authenticate_message, is_valid_message
+from set4.challenge28.mac import MAC
+from set4.challenge28.sha1 import SHA1
 
 
 class TestSHA1MAC(unittest.TestCase):
 
-    def test_authenticate_message_is_valid_message_integration(self):
+    def test_generate_validate_integration(self):
         plaintext = b"You turn yourself around. That's what it's all about."
         key = b"Hokey Pokey"
-        authenticated = authenticate_message(plaintext, key)
+        authenticated = MAC.generate(plaintext, key, SHA1)
 
-        self.assertTrue(is_valid_message(authenticated, key))
+        self.assertTrue(MAC.validate(authenticated, key, SHA1))
 
-    def test_is_valid_message_invalid_message_returns_false(self):
+    def test_validate_invalid_message_returns_false(self):
         plaintext = b"You turn yourself around. That's what it's all about."
         key = b"Hokey Pokey"
-        authenticated = authenticate_message(plaintext, key)
+        authenticated = MAC.generate(plaintext, key, SHA1)
         wrong_key = b"Oh no this is the wrong key"
 
-        self.assertFalse(is_valid_message(authenticated, wrong_key))
+        self.assertFalse(MAC.validate(authenticated, wrong_key, SHA1))
 
-    def test_is_valid_message_message_less_than_20_bytes_returns_false(self):
-        self.assertFalse(is_valid_message(bytes(19), b''))
+    def test_validate_message_less_than_20_bytes_returns_false(self):
+        self.assertFalse(MAC.validate(bytes(19), b'', SHA1))
