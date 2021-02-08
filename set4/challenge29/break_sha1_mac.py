@@ -25,8 +25,8 @@ def length_extension(
         valid authenticated message (i.e. passes `is_valid_message()`)
         with `newtext` appended to it
     """
-    mac = message[:20]
-    oldtext = message[20:]
+    mac = message[:SHA1.digest_size]
+    oldtext = message[SHA1.digest_size:]
 
     start_state = tuple(
         int.from_bytes(block, "big") for block in blocks(mac, 4)

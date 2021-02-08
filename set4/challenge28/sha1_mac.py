@@ -22,6 +22,6 @@ def is_valid_message(message: bytes, key: bytes) -> bool:
     returns:
         True if plaintext matches MAC, False otherwise
     """
-    plaintext = message[20:]
+    plaintext = message[SHA1.digest_size:]
     authenticated = authenticate_message(plaintext, key)
     return authenticated == message

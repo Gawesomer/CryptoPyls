@@ -25,8 +25,8 @@ def length_extension(
         valid authenticated message (i.e. passes `is_valid_message()`)
         with `newtext` appended to it
     """
-    mac = message[:16]
-    oldtext = message[16:]
+    mac = message[:MD4.digest_size]
+    oldtext = message[MD4.digest_size:]
 
     start_state = tuple(
         int.from_bytes(block, "little") for block in blocks(mac, 4)
